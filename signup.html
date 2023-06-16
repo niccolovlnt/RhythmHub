@@ -74,21 +74,21 @@
 
                 <div class="form-outline mb-4">
                     <input type="username" id="username" class="form-control"/>
-                    <label class="form-label opacity-80" for="formusername">Username</label>
+                    <label id="uuser" class="form-label opacity-80" for="formusername">Username</label>
                 </div>
               <!-- Email input -->
               <div class="form-outline mb-4">
                 <input type="email" id="form3Example3" class="form-control"/>
-                <label class="form-label opacity-80" for="form3Example3">E-mail Address</label>
+                <label id="eemail" class="form-label opacity-80" for="form3Example3">E-mail Address</label>
               </div>
 
               <!-- Password input -->
               <div class="form-outline mb-4">
                 <input type="password" id="form3Example4" class="form-control"/>
-                <label class="form-label opacity-80" for="form3Example4">Password</label>
+                <label id="paas" class="form-label opacity-80" for="form3Example4">Password</label>
               </div>
               <!-- Submit button -->
-              <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);">
+              <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
                 Register
               </button>
               <div class="text-center link-dark">
@@ -123,5 +123,38 @@ rel="stylesheet"
   src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
 ></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
+  <script>
+    function signup(){
+      var mail=document.getElementById('eemail').value
+      var pass=document.getElementById('paas').value
+      var user=document.getElementById('uuser').value
+      var data={
+        user: user.value,
+        mail: mail.value,
+        pass: pass.value
+      }
+      fetch("http://127.0.0.1:3000/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            }).then(/*async*/ response => {
+                if (response.ok) {
+                    alert(registrato)
+                } else {
+                    response.text().then(text =>
+                        alert(text)
+                    )
+                    // var messaggio = await response.text()
+                    // alert(messaggio)
+                }
+            })
+    }
+
+
+  </script>
+  <script>"paths.js"</script>
   </body>
 </html>
