@@ -57,8 +57,8 @@
           RhythmHub <br>
           <span style="color: rgb(72, 112, 196)">follow the 🥁</span>
         </h1>
-        <p class="mb-4 opacity-70" style="color: #7879FF">
-          Stay updated about the artist you love, share your favourite songs all over the world and find someone to share your music passion with. Only on RhythmHub.
+        <p class="mb-4 opacity-70" style="color: #3030ae">
+          Stay updated about the artist you love, share your favourite songs all over the world and find someone to share your music with. Only on RhythmHub.
         </p>
       </div>
 
@@ -87,6 +87,7 @@
                 <input type="password" id="form3Example4" class="form-control"/>
                 <label id="paas" class="form-label opacity-80" for="form3Example4">Password</label>
               </div>
+
               <!-- Submit button -->
               <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
                 Register
@@ -102,16 +103,7 @@
     </div>
   </div>
 </section>
-<!-- Font Awesome -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-rel="stylesheet"
-/>
-<!-- Google Fonts -->
-<link
-href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-rel="stylesheet"
-/>
+
 <!-- MDB -->
 <link
   href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
@@ -142,7 +134,7 @@ rel="stylesheet"
                 body: JSON.stringify(data)
             }).then(/*async*/ response => {
                 if (response.ok) {
-                    alert(registrato)
+                    alert("registrato")
                 } else {
                     response.text().then(text =>
                         alert(text)
