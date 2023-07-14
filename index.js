@@ -42,7 +42,7 @@ function showTop(charts, page){
     container.append(card)
     
 
-    for(var i=page;i<page+6;i++) {
+    for(var i=page;i<page+4;i++) {
         if(charts.tracks.items[i].track.name!=""){
             var clone=card.cloneNode(true)
             clone.id = 'playlist-card-' + i
@@ -72,7 +72,7 @@ function getTop(page){
         }
         response.json().then(charts => showTop(charts, page))
     })
-    .catch(error => alert(error))
+    //.catch(error => alert(error))
 }
 
 
