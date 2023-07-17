@@ -69,7 +69,7 @@
         <div class="card bg-glass">
           <div class="card-body px-4 py-5 px-md-5">
             <h2 class="text-center text-primary">Welcome!🎵</h2>
-            <p class="text-center opacity-70"><small>Insert your credentials:</small></p>
+            <p class="text-center opacity-70"><small>Insert your credentials and choose your preferences.</small></p>
             <form class="form-outline">
 
                 <div class="form-outline mb-4">
@@ -91,11 +91,15 @@
 
               <div class="form-outline mb-4">
                 <!-- select genres -->
+                <div class="input-group">
+                  <select id="genre" class="form-select" id="genre" multiple>
+                  </select>
+                </div>
               </div>
 
               <!-- Submit button -->
               <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
-                Register
+                Sign Up
               </button>
               <div class="text-center link-dark">
                 <p style="color: rgb(72, 112, 196);">Already have an account? <a href="login.html" style="color: black;" class="opacity-50"><u>Log in Here.</u></a></p>
@@ -122,16 +126,43 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
   <script>
+     fetch(`https://api.spotify.com/v1/recommendations/available-genre-seeds`, {
+      headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+     })
+    .then(response => response.json())
+    .then(json => {
+        var generi = document.getElementById("genre")
+        for (i = 0; i < json.genres.length; i++) {
+            var opt = document.createElement("option")
+            opt.innerHTML = json.genres[i]
+            generi.appendChild(opt)
+        }
+    })
+  </script>
+  <script>
     function signup(){
-      var mail=document.getElementById('eemail').value
-      var pass=document.getElementById('paas').value
-      var user=document.getElementById('uuser').value
+      var mail=document.getElementById('eemail')
+      var pass=document.getElementById('paas')
+      var user=document.getElementById('uuser')
+      var gen=document.getElementById('genre')
+
+      var generi_selezionati = document.querySelectorAll("#genre :checked");
+      var generi_selezionati_values = []
+      for (let i = 0; i < generi_selezionati.length; i++) {
+        generi_selezionati_values.push(generi_selezionati[i].value)
+      }
+
       var data={
         user: user.value,
         mail: mail.value,
-        pass: pass.value
+        pass: pass.value,
+        genres: generi_selezionati_values
       }
-      fetch("http://127.0.0.1:3000/users", {
+      //console.log(data)
+      fetch("http://192.168.1.133:5500/users", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -148,9 +179,8 @@
                     // alert(messaggio)
                 }
             })
+          
     }
-
-
   </script>
   <script>"paths.js"</script>
   </body>
