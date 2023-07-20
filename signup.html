@@ -71,21 +71,22 @@
             <h2 class="text-center text-primary">Welcome!🎵</h2>
             <p class="text-center opacity-70"><small>Insert your credentials and choose your preferences.</small></p>
             <form class="form-outline">
-
+              <!-- Username Input -->
                 <div class="form-outline mb-4">
-                    <input type="username" id="username" class="form-control"/>
-                    <label id="uuser" class="form-label opacity-80" for="formusername">Username</label>
+                    <input type="username" id="uuser" class="form-control"/>
+                    <label class="form-label opacity-80" for="formusername">Username</label>
                 </div>
+
               <!-- Email input -->
               <div class="form-outline mb-4">
-                <input type="email" id="form3Example3" class="form-control"/>
-                <label id="eemail" class="form-label opacity-80" for="form3Example3">E-mail Address</label>
+                <input type="email" id="eemail" class="form-control"/>
+                <label class="form-label opacity-80" for="form3Example3">E-mail Address</label>
               </div>
 
               <!-- Password input -->
               <div class="form-outline mb-4">
-                <input type="password" id="form3Example4" class="form-control"/>
-                <label id="paas" class="form-label opacity-80" for="form3Example4">Password</label>
+                <input type="password" id="paas" class="form-control"/>
+                <label class="form-label opacity-80" for="form3Example4">Password</label>
               </div>
 
 
@@ -146,7 +147,7 @@
     function signup(){
       var mail=document.getElementById('eemail')
       var pass=document.getElementById('paas')
-      var user=document.getElementById('uuser')
+      var username=document.getElementById('uuser')
       var gen=document.getElementById('genre')
 
       var generi_selezionati = document.querySelectorAll("#genre :checked");
@@ -156,13 +157,13 @@
       }
 
       var data={
-        user: user.value,
+        username: user.value,
         mail: mail.value,
         pass: pass.value,
         genres: generi_selezionati_values
       }
       //console.log(data)
-      fetch("http://192.168.1.133:5500/users", {
+      fetch("http://127.0.0.1:3000/users", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -182,6 +183,5 @@
           
     }
   </script>
-  <script>"paths.js"</script>
   </body>
 </html>
