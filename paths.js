@@ -11,6 +11,7 @@ const app=express();
 
 app.use(cors())
 app.use(express.json())
+
 function hash(input) {
     return crypto.createHash('md5')
         .update(input)
@@ -92,9 +93,9 @@ app.post("/login", async (req,res)=>{
     }
 })
 
-
-
-
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, './'));
+});
 
 app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")
