@@ -6,11 +6,12 @@ var cors=require('cors')
 const express=require('express');
 const path=require('path');
 const { MongoClient } = require('mongodb');
-const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/?retryWrites=true&w=majority"
+const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/"
 const app=express();
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static("public"));
 
 function hash(input) {
     return crypto.createHash('md5')
@@ -19,8 +20,8 @@ function hash(input) {
 }
 
 app.get('/users', async function(req, res){
-    var client=await new MongoClient(mongo).connect()
-    var users=client.db("RhythmHub").collection("Users").find().project({"password":0}).toArray()
+    var client=await new mongoClient(mongo).connect()
+    var users=await client.db("RhythmHub").collection("Users").find().project({"pass":0}).toArray()
     res.json(users)
 })
 
@@ -60,6 +61,7 @@ async function addUser(res, user) {
         res.status(500).send(`Errore generico: ${e}`)
     };
 }
+
 app.post("/users", function (req, res){
     addUser(res, req.body)
 })
@@ -94,7 +96,7 @@ app.post("/login", async (req,res)=>{
 })
 
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, './'));
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 app.listen(3000, "0.0.0.0", ()=>{

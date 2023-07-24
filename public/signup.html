@@ -162,25 +162,24 @@
         pass: pass.value,
         genres: generi_selezionati_values
       }
-      //console.log(data)
+      console.log(data)
       fetch("http://127.0.0.1:3000/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            }).then(/*async*/ response => {
-                if (response.ok) {
-                    alert("registrato")
-                } else {
-                    response.text().then(text =>
-                        alert(text)
-                    )
-                    // var messaggio = await response.text()
-                    // alert(messaggio)
-                }
-            })
-          
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+      }).then(/*async*/ response => {
+          if (response.ok) {
+              alert("registrato")
+          } else {
+              response.text().then(text =>
+                  alert(text)
+              )
+              // var messaggio = await response.text()
+              // alert(messaggio)
+          }
+        })   
     }
   </script>
   </body>
