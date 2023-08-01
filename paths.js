@@ -24,11 +24,15 @@ app.get('/users', async function(req, res){
     res.json(users)
 })
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/index.html'));
-});
-
 async function addUser(res, user) {
+    if(user.name==undefined){
+        res.status(400).send("Missing name")
+        return
+    }
+    if(user.surname==undefined){
+        res.status(400).send("Missing surname")
+        return
+    }
     if (user.username == undefined) {
         res.status(400).send("Missing username")
         return

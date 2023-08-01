@@ -71,6 +71,16 @@
             <h2 class="text-center text-primary">Welcome!🎵</h2>
             <p class="text-center opacity-70"><small>Insert your credentials and choose your preferences.</small></p>
             <form class="form-outline">
+              <!-- Nome -->
+              <div class="form-outline mb-4">
+                <input type="name" id="name" class="form-control"/>
+                <label class="form-label opacity-80" for="formusername">Name</label>
+              </div>
+              <!-- Cognome -->
+              <div class="form-outline mb-4">
+                <input type="surname" id="surname" class="form-control"/>
+                <label class="form-label opacity-80" for="formusername">Surname</label>
+              </div>
               <!-- Username Input -->
                 <div class="form-outline mb-4">
                     <input type="username" id="uuser" class="form-control"/>
@@ -89,7 +99,7 @@
                 <label class="form-label opacity-80" for="form3Example4">Password</label>
               </div>
 
-
+              <!-- Generi -->
               <div class="mb-4">
                 <!-- select genres -->
                 <div class="input-group">
@@ -97,6 +107,10 @@
                   </select>
                 </div>
               </div>
+
+
+
+
 
               <!-- Submit button -->
               <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
@@ -147,6 +161,8 @@
         }
     })
     function signup(){
+      var name=document.getElementById('name')
+      var surname=document.getElementById('surname')
       var username=document.getElementById('uuser')
       var mail=document.getElementById('eemail')
       var pass=document.getElementById('paas')
@@ -159,6 +175,8 @@
       }
 
       var data={
+        name: name.value,
+        surname: surname.value,
         username: username.value,
         mail: mail.value,
         pass: pass.value,
