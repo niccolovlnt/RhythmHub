@@ -5,10 +5,9 @@ const crypto=require('crypto')
 var cors=require('cors')
 const express=require('express');
 const path=require('path');
-const { MongoClient } = require('mongodb');
-const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/"
-const app=express();
+const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/?retryWrites=true&w=majority"
 
+const app=express();
 app.use(cors())
 app.use(express.json())
 app.use(express.static("public"));
@@ -62,10 +61,6 @@ async function addUser(res, user) {
     };
 }
 
-app.post("/users", function (req, res){
-    addUser(res, req.body)
-})
-
 app.post("/login", async (req,res)=>{
     login=req.body
     if (login.email == undefined) {
@@ -93,6 +88,14 @@ app.post("/login", async (req,res)=>{
     } else {
         res.json(loggedUser)
     }
+})
+
+app.post("/users", function (req, res) {
+    /*	#swagger.parameters['obj'] = {
+    in: 'body',
+    description: 'User information.',          
+    } */
+    addUser(res, req.body)
 })
 
 app.get('/', function (req, res) {

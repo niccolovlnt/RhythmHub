@@ -90,10 +90,10 @@
               </div>
 
 
-              <div class="form-outline mb-4">
+              <div class="mb-4">
                 <!-- select genres -->
                 <div class="input-group">
-                  <select id="genre" class="form-select" id="genre" multiple>
+                  <select id="gen" class="form-select" multiple>
                   </select>
                 </div>
               </div>
@@ -135,29 +135,31 @@
      })
     .then(response => response.json())
     .then(json => {
-        var generi = document.getElementById("genre")
+        var generi = document.getElementById("gen")
         for (i = 0; i < json.genres.length; i++) {
             var opt = document.createElement("option")
+            opt.value=json.genres[i]
             opt.innerHTML = json.genres[i]
-            generi.appendChild(opt)
+            if(opt!=null){
+              generi.appendChild(opt)
+            }
+            
         }
     })
-  </script>
-  <script>
     function signup(){
+      var username=document.getElementById('uuser')
       var mail=document.getElementById('eemail')
       var pass=document.getElementById('paas')
-      var username=document.getElementById('uuser')
-      var gen=document.getElementById('genre')
+      var gen=document.getElementById('gen')
 
-      var generi_selezionati = document.querySelectorAll("#genre :checked");
+      var generi_selezionati = document.querySelectorAll("#gen :checked");
       var generi_selezionati_values = []
       for (let i = 0; i < generi_selezionati.length; i++) {
         generi_selezionati_values.push(generi_selezionati[i].value)
       }
 
       var data={
-        username: user.value,
+        username: username.value,
         mail: mail.value,
         pass: pass.value,
         genres: generi_selezionati_values
