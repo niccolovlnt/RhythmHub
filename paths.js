@@ -67,7 +67,7 @@ async function addUser(res, user) {
 
 app.post("/login", async (req,res)=>{
     login=req.body
-    if (login.email == undefined) {
+    if (login.mail == undefined) {
         res.status(400).send("Missing Email")
         return
     }

@@ -17,6 +17,18 @@ function next(){
         getTop(page)
     }
 }
+function prevS(){
+    if (page>1){
+        page=page-5
+        ricerca(localStorage.getItem("query"), page)
+    }
+}
+function nextS(){
+    if (page<45){
+        page=page+5
+        ricerca(localStorage.getItem("query"), page)
+    }
+}
 
 function getToken(){
     fetch(url, {
@@ -66,14 +78,57 @@ function getTop(page){
         },
     })
     .then(response => {
-        if (!response.ok) {
-            response.json().then(data => alert(data.status_message))
-            return
-        }
+        // if (!response.ok) {
+        //     response.json().then(data => alert(data.status_message))
+        //     return
+        // }
         response.json().then(charts => showTop(charts, page))
     })
     //.catch(error => alert(error))
 }
 
+function ricerca(query, page){
+    localStorage.setItem("query", query)
+    if(query.length>1){
+        console.log(query)
+        fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&market=IT&limit=50&offset=${page}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+        })
+        .then(response => {
+            // if (!response.ok) {
+            //     response.json().then(data => alert(data.status_message))
+            //     return
+            // }
+            response.json().then(charts => showSearch(charts, page))
+        })
+        //.catch(error => alert(error))
+    }
+}
+
+function showSearch(charts, page){
+    var picker=document.getElementById("picker")
+    picker.classList.remove('d-none')
+    var card=document.getElementById("playlist-card")
+    var container = document.getElementById("playlist-container")
+    container.innerHTML = ""
+    container.append(card)
+    
+    for(var i=page;i<page+4;i++) {
+        if(charts.tracks.items[i].name!=""){
+            var clone=card.cloneNode(true)
+            clone.id = 'playlist-card-' + i
+        }
+        clone.getElementsByClassName('card-img-top')[0].src = charts.tracks.items[i].album.images[0].url
+        clone.getElementsByClassName('card-title')[0].innerHTML = charts.tracks.items[i].name
+        clone.getElementsByClassName('card-text')[0].innerHTML = charts.tracks.items[i].artists[0].name
+        clone.getElementsByClassName('date')[0].innerHTML = charts.tracks.items[i].album.release_date
+        clone.getElementsByClassName('album')[0].innerHTML=charts.tracks.items[i].album.name
+        clone.classList.remove('d-none')
+        card.before(clone)
+    }
+}
 
 
