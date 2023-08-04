@@ -8,27 +8,22 @@ var dropdown="<div></div>"
 
 if(localStorage.getItem('user')!=null){
     var user = JSON.parse(localStorage.getItem('user'))
-    console.log(localStorage.getItem('user'))
-    console.log(user)
-    menuItems.push({label: `Playlist`, link: "playlist.html"})
+    //console.log(localStorage.getItem('user'))
+    //console.log(user)
+    //var filter=menuItems.filter(item => item.label !=="Log In")
     var dropdown = `
-        <div class="d-flex">
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <button class="btn dropdown-toggle" data-bs-toggle="dropdown">
-                        Benvenuto ${user.name}
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#" onclick="logout()">Logout</a>
-                        </li>
-                
-                    </ul>
-
+        <div class="nav-item dropdown d-flex">
+            <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                Welcome ${user.name}
+            </button>
+            <ul class="dropdown-menu ms-auto me-2">
+                <li>
+                    <a class="dropdown-item" href="playlist.html">My Playlists</a>
+                    <a class="dropdown-item" href="settings.html">My Account</a>
+                    <a class="dropdown-item" onclick="logout()">Logout</a>
                 </li>
             </ul>
-        </div>
-        `;
+        </div>`;
 }
 var menuHTML = "";
 for (let i = 0; i < menuItems.length; i++) {
@@ -37,24 +32,29 @@ for (let i = 0; i < menuItems.length; i++) {
 }
 function logout(){
     localStorage.removeItem("user");
-    window.location.href = "index.html"
+    window.location.href = "http://127.0.0.1:3000/login.html"
 }
+
 const menuElement = document.getElementById('menu');
 menuElement.innerHTML=`
-    <nav class="navbar bg-primary">
+<nav class="navbar bg-primary">
     <div class="container-fluid">
-    <a class="navbar-brand" href="index.html">
-        <img src="iconPNG.png" alt="Logo" width="24" height="24" class="d-inline-block align-text-top">
-        RhythmHub
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <ul class="navbar-nav">
-        ${menuHTML}
-        </ul>
-        ${dropdown}
+    <div class="d-flex justify-content-start">
+        <a class="navbar-brand" href="index.html">
+            <img src="iconPNG.png" alt="Logo" width="24" height="24" class="d-inline-block align-text-top">
+            RhythmHub
+        </a>
     </div>
-    </nav>
-`;
+    <div class="d-flex justify-content-end">
+        ${dropdown}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav flex-column">
+            ${menuHTML}
+            </ul>
+        </div>
+    </div>
+    </div>
+</nav>`;

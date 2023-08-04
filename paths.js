@@ -86,7 +86,7 @@ app.post("/login", async (req,res)=>{
     var loggedUser = await pwmClient.db("RhythmHub")
         .collection('Users')
         .findOne(filter);
-    console.log(loggedUser)
+    //console.log(loggedUser)
     if (loggedUser == null) {
         res.status(401).send("Unauthorized")
     } else {
@@ -104,7 +104,7 @@ app.post("/users", function (req, res) {
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+})
 
 app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")

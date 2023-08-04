@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>RhythmHub - Login</title>
+    <link rel="icon" href="iconPNG.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
   </head>
   <body style="background: url('def2.png') no-repeat center center fixed;
@@ -100,27 +101,25 @@
               </div>
 
               <!-- Generi -->
-              <div class="mb-4">
+              <div>
                 <!-- select genres -->
                 <div class="input-group">
                   <select id="gen" class="form-select" multiple>
                   </select>
                 </div>
               </div>
-
-
-
-
-
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary btn-block mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
+              </div>
+            </form>
+            <!-- Submit button -->
+            <div class="col text-center g-2 ">
+              <button type="submit" class="btn btn-primary mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
                 Sign Up
               </button>
               <div class="text-center link-dark">
-                <p style="color: rgb(72, 112, 196);">Already have an account? <a href="login.html" style="color: black;" class="opacity-50"><u>Log in Here.</u></a></p>
+                <p style="color: rgb(72, 112, 196);">Already have an account? <a href="signup.html" style="color: black;" class="opacity-50"><u>Log In here.</u></a></p>
               </div>
-              </div>
-            </form>
+            </div>
+
           </div>
         </div>
       </div>
@@ -184,20 +183,18 @@
       }
       console.log(data)
       fetch("http://127.0.0.1:3000/users", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-      }).then( response => {
-          if (response.ok) {
-              alert("registrato")
-          } else {
-              response.text().then(text =>
-                  alert(text)
-              )
-          }
-        })   
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        window.location.href="login.html"
+      })  
+      .catch(error => {
+        console.error("Error: ", error)
+      })
     }
   </script>
   </body>
