@@ -109,3 +109,37 @@ app.get('/', function (req, res) {
 app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")
 })
+
+app.delete("/users/:id", function(req, res){
+    deleteUser(res, req.params.id)
+})
+
+async function deleteUser(res, id){
+  try {
+    var client = await new mongoClient(mongo).connect()
+    var collection = client.db('RhythmHub').collection('Users');
+    var objectId = new ObjectId(id);
+    var result = await collection.deleteOne({ _id: objectId });
+    if (result.deletedCount === 1) {
+      res.status(200).json({ message: 'User deleted successfully.' });
+    } else {
+      res.status(404).json({ error: 'User not found.' });
+    }
+  } catch (error) {
+    console.error('Error occurred while deleting user:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+}
+
+
+
+
+
+
+
+
+
+
+//await client.db("RhythmHub").collection("Users").deleteOne({ _id: id });
+    // users=users.filter(user => user._id != id)
+    // res.json(users)

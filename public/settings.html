@@ -46,14 +46,14 @@
                 </div>
 
                 <div class="card mt-3">
-                    <div class="col text-center p-2">
-                        <a href="#" class="btn btn-primary">Update Account</a>
+                    <div class="col text-center g-2 p-2">
+                        <a href="#" class="btn btn-primary d-flex">Update Account</a>
                       </div>
                 </div>
 
                 <div class="card mt-3">
-                    <div class="col text-center p-2">
-                        <a href="#" class="btn btn-primary">Delete Account</a>
+                    <div class="col text-center g-2 p-2">
+                        <a class="btn btn-primary d-flex" onclick="deleteAcc()">Delete Account</a>
                       </div>
                 </div>
             </div>
@@ -93,6 +93,24 @@ rel="stylesheet"
         document.getElementById('surname').innerHTML=user.surname
         document.getElementById('email').innerHTML=user.mail
         document.getElementById('genres').innerHTML=user.genres
+    }
+
+    function deleteAcc(){
+        var us=JSON.parse(localStorage.getItem('user'))
+        var id=us._id
+        fetch("http://127.0.0.1:3000/users/:${id}", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then( async response => {
+            localStorage.removeItem('user')
+            window.location.href="signup.html"
+        })
+        .catch(error => {
+            console.error("error: "+ error)
+        })
     }
 </script>
 

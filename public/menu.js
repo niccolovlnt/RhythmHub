@@ -39,11 +39,10 @@ const menuElement = document.getElementById('menu');
 menuElement.innerHTML=`
 <nav class="navbar bg-primary">
     <div class="container-fluid">
-    <div class="d-flex justify-content-start">
-        <a class="navbar-brand" href="index.html">
-            <img src="iconPNG.png" alt="Logo" width="24" height="24" class="d-inline-block align-text-top">
-            RhythmHub
-        </a>
+    <div class="navbar-brand d-flex justify-content-start">
+        
+        <img src="iconPNG.png" alt="Logo" width="35" height="35" class="align-text-top">
+        <span class="d-none d-sm-none d-md-inline">RhythmHub</span>
     </div>
     <div class="d-flex justify-content-end">
         ${dropdown}
