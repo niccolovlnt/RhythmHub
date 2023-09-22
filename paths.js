@@ -131,15 +131,46 @@ async function deleteUser(res, id){
   }
 }
 
+app.put("/update/:id", function(req, res){
+    updateUser(res, req.params.id, req.body)
+})
 
-
-
-
-
-
-
-
-
-//await client.db("RhythmHub").collection("Users").deleteOne({ _id: id });
-    // users=users.filter(user => user._id != id)
-    // res.json(users)
+async function updateUser(res, id, updatedUser){
+    if (updatedUser.name == undefined) {
+        res.status(400).send("Missing Name")
+        return
+    }
+    if (updatedUser.surname == undefined) {
+        res.status(400).send("Missing Surname")
+        return
+    }
+    if (updatedUser.mail == undefined) {
+        res.status(400).send("Missing Email")
+        return
+    }
+    if(updatedUser.username == undefined){
+        res.status(400).send("Missing Username")
+        return
+    }
+    if (updatedUser.pass !== undefined) {
+        updatedUser.pass = hash(updatedUser.pass)
+    }
+    
+    try{
+        var client = await new mongoClient(mongo).connect()
+        var filter={"_id": new ObjectId(id)}
+        var upUserToInsert={
+            $set: updatedUser
+        }
+        await client.db("RhythmHub").collection("Users").updateOne(filter, upUserToInsert)
+        var item=await client.db("RhythmHub").collection("Users").findOne(filter);
+        res.send(item)
+    }catch(e){
+        console.log('catch in test');
+        if (e.code == 11000) {
+            res.status(400).send("Utente già presente")
+            return
+        }
+        res.status(500).send(`Errore: ${e}`)
+    }
+}

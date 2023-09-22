@@ -141,14 +141,9 @@ rel="stylesheet"
       body: JSON.stringify(user)
     })
     .then(response => {
-      // console.log('Response status:', response.status);
-      // if (!response.ok) {
-      //   throw new Error('Login failed.');
-      // }
       return response.json();
     })
     .then( async loggedUser => {
-      //console.log('Logged user:', loggedUser);
       localStorage.setItem('user', JSON.stringify(loggedUser))
       window.location.href="http://127.0.0.1:3000"
     })

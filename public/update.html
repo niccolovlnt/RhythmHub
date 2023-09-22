@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RhythmHub - My Account</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="icon" href="iconPNG.png" type="image/png">
+  </head>
+
+  <body style="background: url('def2.png') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  font-family: 'Helvetica Neue';">
+
+  <div>
+    <div id="menu"></div>
+    <div class="row">
+        <div class="col d-flex justify-content-center mt-3">
+            <h1 id="username" style="color: rgb(77,98,188);"><strong><span id="username"></span> </strong></h1>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-4 col-md-6 col-sm-12 justify-content-center mt-3 ">
+                <div class="card">
+                    <h5 class="card-header"> <strong>Update your data</strong></h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <h5 class="card-title">First Name</h5>
+                            <div class="mb-3">
+                                <input type="name" class="form-control" id="name" placeholder="">
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">Last Name</h5>
+                            <div class="mb-3">
+                                <input type="surname" class="form-control" id="surname" placeholder="">
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">E-Mail</h5>
+                            <div class="mb-3">
+                                <input type="email" id="email" class="form-control" placeholder="">
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">Username</h5>
+                            <div class="mb-3">
+                                <input type="username" id="us" class="form-control" placeholder="">
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">Password</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="password">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Change Password</label>
+                            </div>
+                            <div id="changeps" class="mt-2 mb-2"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">Favourite Genres</h5>
+                            <div class="input-group mb-2">
+                                <select id="gen" class="form-select" multiple>
+                                </select>
+                            </div>
+                        </li>
+                      </ul>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="col text-center g-2 p-2">
+                        <a class="btn btn-primary d-flex" onclick="updateAcc()">Update Account</a>
+                      </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+  </div>
+<!-- Font Awesome -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+rel="stylesheet"
+/>
+    <!-- MDB -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
+rel="stylesheet"
+/>
+<!-- MDB -->
+  <script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="menu.js"></script>
+<script src="account.js"></script>
+
+<script>
+    if(localStorage.getItem('user')!=null){
+        var user=JSON.parse(localStorage.getItem('user'))
+        document.getElementById('username').innerHTML= "@"+user.username
+        document.getElementById("name").value=user.name
+        document.getElementById('surname').value=user.surname
+        document.getElementById('email').value=user.mail
+        document.getElementById('us').value=user.username
+    }
+
+    
+    document.addEventListener('DOMContentLoaded', function(){
+        var checkbox=document.getElementById('password')
+        checkbox.addEventListener('change', function(){
+            if(this.checked){
+                const psw=document.getElementById('changeps')
+                psw.innerHTML=`
+                <div class="form-floating mt-3">
+                    <input type="password" id="pass1" class="form-control">
+                    <label for="pass1">Insert new password:</label>
+                </div>
+                <div class="form-floating mt-3">
+                    <input type="password" id="pass2" class="form-control">
+                    <label for="pass2">Re-insert your password:</label>
+                    <span id="valid"></span>
+                </div>
+                `;
+            }else{
+                const psw=document.getElementById('changeps')
+                psw.innerHTML=``;
+            }
+        })
+    })
+    
+    function updateAcc(){
+        var ps1=document.getElementById('pass1')
+        if(ps1 != null){
+            var ps2=document.getElementById('pass2')
+            if(ps1.value!==ps2.value){
+                ps2.classList.add("is-invalid")
+                var labpsw=document.querySelector('label[for="pass2"]')
+                labpsw.textContent="Password does not match"
+            }else{
+                var name=document.getElementById('name')
+                var surname=document.getElementById('surname')
+                var username=document.getElementById('us')
+                var mail=document.getElementById('email')
+                var pass=document.getElementById('pass1')
+                var gen=document.getElementById('gen')
+                var generi_selezionati = document.querySelectorAll("#gen :checked");
+                var generi_selezionati_values = []
+                for (let i = 0; i < generi_selezionati.length; i++) {
+                    generi_selezionati_values.push(generi_selezionati[i].value)
+                }
+                var data={
+                    name: name.value,
+                    surname: surname.value,
+                    username: username.value,
+                    mail: mail.value,
+                    pass: pass.value,
+                    genres: generi_selezionati_values
+                }
+                var us=JSON.parse(localStorage.getItem('user'))
+                var id=us._id
+                fetch(`http://127.0.0.1:3000/update/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    return response.json()
+                })
+                .then(async updatedUser =>{
+                    localStorage.removeItem('user')
+                    window.location.href="login.html"
+                })
+                .catch(error => {
+                    console.error("Error: ", error)
+                })
+            }
+        }else{
+            var name=document.getElementById('name')
+                var surname=document.getElementById('surname')
+                var username=document.getElementById('us')
+                var mail=document.getElementById('email')
+                var gen=document.getElementById('gen')
+                var generi_selezionati = document.querySelectorAll("#gen :checked");
+                var generi_selezionati_values = []
+                for (let i = 0; i < generi_selezionati.length; i++) {
+                    generi_selezionati_values.push(generi_selezionati[i].value)
+                }
+                var data={
+                    name: name.value,
+                    surname: surname.value,
+                    username: username.value,
+                    mail: mail.value,
+                    genres: generi_selezionati_values
+                }
+                var us=JSON.parse(localStorage.getItem('user'))
+                var id=us._id
+                fetch(`http://127.0.0.1:3000/update/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    return response.json()
+                })
+                .then(async updatedUser =>{
+                    localStorage.removeItem('user')
+                    localStorage.setItem('user', JSON.stringify(updatedUser))
+                    window.location.href="settings.html"
+                })
+                .catch(error => {
+                    console.error("Error: ", error)
+                })
+            }
+}
+    //fetch per mostrare i generi da selezionare
+    fetch(`https://api.spotify.com/v1/recommendations/available-genre-seeds`, {
+      headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+     })
+    .then(response => response.json())
+    .then(json => {
+        var generi = document.getElementById("gen")
+        for (i = 0; i < json.genres.length; i++) {
+            var opt = document.createElement("option")
+            opt.value=json.genres[i]
+            opt.innerHTML = json.genres[i]
+            if(opt!=null){
+              generi.appendChild(opt)
+            }      
+        }
+    })
+
+</script>
+
+<!-- MDB -->
+    <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+  </body>
+</html>
