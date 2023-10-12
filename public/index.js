@@ -65,6 +65,7 @@ function showTop(charts, page){
         clone.getElementsByClassName('date')[0].innerHTML = charts.tracks.items[i].track.album.release_date
         clone.getElementsByClassName('album')[0].innerHTML=charts.tracks.items[i].track.album.name
         clone.getElementsByClassName('duration')[0].innerHTML=(Math.floor((charts.tracks.items[i].track.duration_ms/1000/60) << 0)).toString() +":"+ (Math.floor((charts.tracks.items[i].track.duration_ms/1000) % 60)).toString()
+        clone.getElementsByClassName('btn-secondary')[0].href="song.html?id_song="+charts.tracks.items[i].track.id
         clone.classList.remove('d-none')
         card.before(clone)
     }
@@ -131,4 +132,29 @@ function showSearch(charts, page){
     }
 }
 
-
+function getSong(id){
+    fetch(`https://api.spotify.com/v1/tracks/${id}`,{
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            response.json().then(data => alert(data.status_message))
+            return
+        }
+        response.json().then(song => showSong(song))
+    })
+    .catch(error => alert(error))
+}
+function showSong(song){
+    console.log(song)
+    document.getElementById("tit").innerHTML=song.name
+    document.getElementById("img").src=song.album.images[0].url
+    document.getElementById("art").innerHTML=song.artists[0].name
+    document.getElementById("alb").innerHTML=song.album.name
+    document.getElementById("date").innerHTML=song.album.release_date
+    document.getElementById("dur").innerHTML=(Math.floor((song.duration_ms/1000/60) << 0)).toString() +":"+ (Math.floor((song.duration_ms/1000) % 60)).toString()
+    document.getElementById("gen").innerHTML=song.popularity
+}
