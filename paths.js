@@ -1,17 +1,26 @@
 const mongoClient=require('mongodb').MongoClient;
 const ObjectId=require('mongodb').ObjectId;
-//const auth=require('./auth').auth
 const crypto=require('crypto')
-var cors=require('cors')
-const express=require('express');
-const path=require('path');
+const cors=require('cors')
+const express=require('express')
+const path=require('path')
 const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/?retryWrites=true&w=majority"
+const jwt=require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
+const auth=require('./public/auth.js').auth
+const bodyParser=require('body-parser')
+const app=express()
 
-const app=express();
-app.use(cors())
 app.use(express.json())
-app.use(express.static("public"));
+app.use(express.static("public"))
+app.use(bodyParser.json())
+app.use(cookieParser())
+app.use(cors())
+// app.use(auth)
 
+
+
+const jwtsecret="0612ad6d7052a272cebce186435b76ab903a36a70b649b9f53988afb7efbf77e0c14ecf294cf16ce35f3bd96cf9ba79decbf008a5054f5438c06c85dda036e04"
 function hash(input) {
     return crypto.createHash('md5')
         .update(input)
@@ -53,6 +62,8 @@ async function addUser(res, user) {
     var pwmClient = await new mongoClient(mongo).connect()
     try {
         var items = await pwmClient.db("RhythmHub").collection('Users').insertOne(user)
+        var token=jwt.sign({user}, jwtsecret, {expiresIn: '3600s'});
+        res.cookie('jwttoken',token, {httpOnly: true});
         res.json(items)
     }
     catch (e) {
@@ -65,7 +76,7 @@ async function addUser(res, user) {
     };
 }
 
-app.post("/login", async (req,res)=>{
+app.post("/login", auth, async (req,res)=>{
     login=req.body
     if (login.mail == undefined) {
         res.status(400).send("Missing Email")
@@ -86,19 +97,18 @@ app.post("/login", async (req,res)=>{
     var loggedUser = await pwmClient.db("RhythmHub")
         .collection('Users')
         .findOne(filter);
-    //console.log(loggedUser)
-    if (loggedUser == null) {
-        res.status(401).send("Unauthorized")
+    console.log(loggedUser)
+    if (loggedUser==null) {
+    res.status(401).send("Unauthorized")
+    //gestire utente insesistenti o psw sbagliata
     } else {
+        const token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
+        res.cookie("jwttoken", token, {httpOnly: true});
         res.json(loggedUser)
     }
 })
 
 app.post("/users", function (req, res) {
-    /*	#swagger.parameters['obj'] = {
-    in: 'body',
-    description: 'User information.',          
-    } */
     addUser(res, req.body)
 })
 
@@ -106,11 +116,23 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/index.html'));
 })
 
+app.get('/login', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/login.html'));
+})
+
+app.get('/search', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/search.html'));
+})
+
+app.get('/signup', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/signup.html'));
+})
+
 app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")
 })
 
-app.delete("/users/:id", function(req, res){
+app.delete("/users/:id", auth, function(req, res){
     deleteUser(res, req.params.id)
 })
 
@@ -131,7 +153,7 @@ async function deleteUser(res, id){
   }
 }
 
-app.put("/update/:id", function(req, res){
+app.put("/update/:id", auth, function(req, res){
     updateUser(res, req.params.id, req.body)
 })
 
