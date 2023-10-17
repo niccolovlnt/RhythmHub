@@ -1,11 +1,11 @@
 const menuItems = [
-    { label: "Home", link: "index.html" },
+    { label: "Home", link: "home.html" },
     { label: "Log In", link: "login.html" },
     { label: "Sign Up", link: "signup.html" },
     { label: "Search", link: "search.html"},
 ]
 const loggedMenuItems=[
-    { label: "Home", link: "index.html" },
+    { label: "Home", link: "home.html" },
     { label: "Search", link: "search.html"},
 ]
 var dropdown="<div></div>"

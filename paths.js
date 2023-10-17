@@ -8,7 +8,8 @@ const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.n
 const jwt=require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 const auth=require('./public/auth.js').auth
-const bodyParser=require('body-parser')
+const bodyParser=require('body-parser');
+const { log } = require('console');
 const app=express()
 
 app.use(express.json())
@@ -16,9 +17,12 @@ app.use(express.static("public"))
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors())
-// app.use(auth)
 
-
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 const jwtsecret="0612ad6d7052a272cebce186435b76ab903a36a70b649b9f53988afb7efbf77e0c14ecf294cf16ce35f3bd96cf9ba79decbf008a5054f5438c06c85dda036e04"
 function hash(input) {
@@ -63,7 +67,7 @@ async function addUser(res, user) {
     try {
         var items = await pwmClient.db("RhythmHub").collection('Users').insertOne(user)
         var token=jwt.sign({user}, jwtsecret, {expiresIn: '3600s'});
-        res.cookie('jwttoken',token, {httpOnly: true});
+        res.cookie('token',token, {httpOnly: true});
         res.json(items)
     }
     catch (e) {
@@ -76,8 +80,9 @@ async function addUser(res, user) {
     };
 }
 
-app.post("/login", auth, async (req,res)=>{
+app.post("/login", async (req,res)=>{
     login=req.body
+    console.log(login)
     if (login.mail == undefined) {
         res.status(400).send("Missing Email")
         return
@@ -97,14 +102,15 @@ app.post("/login", auth, async (req,res)=>{
     var loggedUser = await pwmClient.db("RhythmHub")
         .collection('Users')
         .findOne(filter);
-    console.log(loggedUser)
+    console.log("ciaoo" +loggedUser)
     if (loggedUser==null) {
     res.status(401).send("Unauthorized")
     //gestire utente insesistenti o psw sbagliata
     } else {
-        const token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
-        res.cookie("jwttoken", token, {httpOnly: true});
-        res.json(loggedUser)
+        console.log("hola" +loggedUser)
+        var token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
+        res.cookie('token',token, {httpOnly: true});
+        res.json(loggedUser).send()
     }
 })
 
@@ -112,15 +118,16 @@ app.post("/users", function (req, res) {
     addUser(res, req.body)
 })
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+app.get('/',auth, function (req, res) {
+    console.log("ciao zi")
+    res.sendFile(path.join(__dirname, 'public/home.html'));
 })
 
 app.get('/login', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/login.html'));
 })
 
-app.get('/search', function (req, res) {
+app.get('/search',auth, function (req, res) {
     res.sendFile(path.join(__dirname, 'public/search.html'));
 })
 
