@@ -4,6 +4,7 @@ const crypto=require('crypto')
 const cors=require('cors')
 const express=require('express')
 const path=require('path')
+const cookies=require('js-cookie')
 const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/?retryWrites=true&w=majority"
 const jwt=require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
@@ -18,13 +19,47 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(cors())
 
+//frontend variables
+const url ="https://accounts.spotify.com/api/token"
+const client_ID = "ecd0dfc2d7f14d23a0ed755829e2ce3d"
+const client_Secret = "561839255308440f9c7e5df1f04f2cb1"
+var spotytoken=""
+
+//cors variables
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
 
+// spotify token refresh
+  fetch((url), {
+    method: "POST",
+    headers: {
+        Authorization: "Basic " + btoa(`${client_ID}:${client_Secret}`),
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    body: new URLSearchParams({ grant_type: "client_credentials" }), })
+    .then((response) => response.json()) .then((tokenResponse) =>
+    spotytoken=tokenResponse.access_token       
+  ) 
+  setInterval(() => {
+    fetch((url), {
+      method: "POST",
+      headers: {
+          Authorization: "Basic " + btoa(`${client_ID}:${client_SECRET}`),
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+  body: new URLSearchParams({ grant_type: "client_credentials" }), })
+  .then((response) => response.json()) .then((tokenResponse) =>
+            spotytoken=tokenResponse.access_token       
+  )
+  }, (1000*60)*59);
+
+
 const jwtsecret="0612ad6d7052a272cebce186435b76ab903a36a70b649b9f53988afb7efbf77e0c14ecf294cf16ce35f3bd96cf9ba79decbf008a5054f5438c06c85dda036e04"
+
+//hashing psw function
 function hash(input) {
     return crypto.createHash('md5')
         .update(input)
@@ -81,8 +116,7 @@ async function addUser(res, user) {
 }
 
 app.post("/login", async (req,res)=>{
-    login=req.body
-    console.log(login)
+    var login=req.body
     if (login.mail == undefined) {
         res.status(400).send("Missing Email")
         return
@@ -102,12 +136,10 @@ app.post("/login", async (req,res)=>{
     var loggedUser = await pwmClient.db("RhythmHub")
         .collection('Users')
         .findOne(filter);
-    console.log("ciaoo" +loggedUser)
     if (loggedUser==null) {
     res.status(401).send("Unauthorized")
     //gestire utente insesistenti o psw sbagliata
     } else {
-        console.log("hola" +loggedUser)
         var token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
         res.cookie('token',token, {httpOnly: true});
         res.json(loggedUser).send()
@@ -119,7 +151,6 @@ app.post("/users", function (req, res) {
 })
 
 app.get('/',auth, function (req, res) {
-    console.log("ciao zi")
     res.sendFile(path.join(__dirname, 'public/home.html'));
 })
 
@@ -203,3 +234,63 @@ async function updateUser(res, id, updatedUser){
         res.status(500).send(`Errore: ${e}`)
     }
 }
+
+//implementation of frontend requests
+
+app.get("/spoty/tops", auth, function(req, res){
+    fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response => {
+        return response.json()
+    })
+    .then(data =>{
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ",e)
+    })
+})
+
+app.get("/spoty/search", auth, function(req, res){
+    var query=req.query.query
+    fetch(`https://api.spotify.com/v1/search?q=${query}&type=track%2Cartist&market=IT&limit=50`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response =>{
+        return response.json()
+    })
+    .then(data =>{
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ", e)
+    })
+})
+
+app.get("/spoty/song", auth, function(req, res){
+    var ident=req.query.id
+    fetch(`https://api.spotify.com/v1/tracks/${ident}`,{
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response => {
+        return response.json()
+    })
+    .then(data =>{
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ", e)
+    })
+})
+
+//implementare la rimoazione del token nel logout() in menu.js

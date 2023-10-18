@@ -20,7 +20,7 @@
 
     <div class="input-group p-4">
       <div class="form-outline">
-        <input type="search" id="form1" class="form-control" onkeyup="ricerca(this.value, 0)"/>
+        <input type="search" id="form1" class="form-control" onkeyup="search(this.value)"/>
         <label class="form-label" for="form1">Search</label>
       </div>
       <button type="button" class="btn btn-primary">  
@@ -30,8 +30,8 @@
 
     <div class="col text-center g-4 p-4 d-none" id="picker">
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary"  onclick="prevS()">Previous</button>
-        <button type="button" class="btn btn-primary"  onclick="nextS()">Next</button>
+        <button type="button" class="btn btn-primary"  onclick="psongs()">Previous</button>
+        <button type="button" class="btn btn-primary"  onclick="nsongs()">Next</button>
       </div>
     </div>
 
@@ -74,7 +74,40 @@ rel="stylesheet"
 />
 <script src="menu.js"></script>
 <script src="index.js"></script>
-<script>getToken()</script>
+<script>
+  localStorage.setItem("page", 0)
+  function search(query){
+    localStorage.setItem("query", query)
+    fetch(`http://127.0.0.1:3000/spoty/search?query=${query}`)
+    .then(response => {
+      return response.json()
+    })
+    .then(data =>{
+      showSearch(data)
+    })
+    .catch(e => {
+      console.error("Error:", e)
+    })
+  }
+  
+  function psongs(){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
+    if(pg>1){
+      localStorage.setItem("page", pg - 5)
+      search(localStorage.getItem("query"))
+    }
+  }
+
+  function nsongs(){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
+    if(pg<45){
+      localStorage.setItem("page", pg + 5)
+      search(localStorage.getItem("query"))
+    }
+  }
+  
+  
+</script>
 <!-- MDB -->
     <script
     type="text/javascript"

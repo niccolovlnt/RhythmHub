@@ -1,51 +1,5 @@
-var token=""
-const client_ID = "ecd0dfc2d7f14d23a0ed755829e2ce3d"
-const client_Secret = "561839255308440f9c7e5df1f04f2cb1"
-
-var url ="https://accounts.spotify.com/api/token"
-var page=0
-
-function prev(){
-    if (page>1){
-        page=page-5
-        getTop(page)
-    }
-}
-function next(){
-    if (page<45){
-        page=page+5
-        getTop(page)
-    }
-}
-function prevS(){
-    if (page>1){
-        page=page-5
-        ricerca(localStorage.getItem("query"), page)
-    }
-}
-function nextS(){
-    if (page<45){
-        page=page+5
-        ricerca(localStorage.getItem("query"), page)
-    }
-}
-
-function getToken(){
-    fetch(url, {
-        method: "POST",
-        headers: {
-            Authorization: "Basic " + btoa(`${client_ID}:${client_Secret}`),
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-    
-        body: new URLSearchParams({ grant_type: "client_credentials" }), })
-        .then((response) => response.json()) .then((tokenResponse) =>
-            localStorage.setItem("token", tokenResponse.access_token)
-          //Sarebbe opportuno salvare il token nel local storage
-    )
-}
-
-function showTop(charts, page){
+function showTop(charts){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
     document.getElementById('playname').innerHTML=charts.name
     document.getElementById('playfoll').innerHTML=("Followers: " +((charts.followers.total/1000000).toString().slice(0,5) +"M"))
     var card=document.getElementById("playlist-card")
@@ -53,8 +7,7 @@ function showTop(charts, page){
     container.innerHTML = ""
     container.append(card)
     
-
-    for(var i=page;i<page+4;i++) {
+    for(var i=pg;i<pg+4;i++) {
         if(charts.tracks.items[i].track.name!=""){
             var clone=card.cloneNode(true)
             clone.id = 'playlist-card-' + i
@@ -70,46 +23,8 @@ function showTop(charts, page){
         card.before(clone)
     }
 }
-
-function getTop(page){
-     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50&offset=${page}`, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-    })
-    .then(response => {
-        // if (!response.ok) {
-        //     response.json().then(data => alert(data.status_message))
-        //     return
-        // }
-        response.json().then(charts => showTop(charts, page))
-    })
-    //.catch(error => alert(error))
-}
-
-function ricerca(query, page){
-    localStorage.setItem("query", query)
-    if(query.length>1){
-        //console.log(query)
-        fetch(`https://api.spotify.com/v1/search?q=${query}&type=track%2Cartist&market=IT&limit=50&offset=${page}`,{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-        })
-        .then(response => {
-            // if (!response.ok) {
-            //     response.json().then(data => alert(data.status_message))
-            //     return
-            // }
-            response.json().then(charts => showSearch(charts, page))
-        })
-        //.catch(error => alert(error))
-    }
-}
-
-function showSearch(charts, page){
+function showSearch(charts){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
     var picker=document.getElementById("picker")
     picker.classList.remove('d-none')
     var card=document.getElementById("playlist-card")
@@ -117,7 +32,7 @@ function showSearch(charts, page){
     container.innerHTML = ""
     container.append(card)
     
-    for(var i=page;i<page+4;i++) {
+    for(var i=pg;i<pg+4;i++) {
         if(charts.tracks.items[i].name!=""){
             var clone=card.cloneNode(true)
             clone.id = 'playlist-card-' + i
@@ -131,25 +46,7 @@ function showSearch(charts, page){
         card.before(clone)
     }
 }
-
-function getSong(id){
-    fetch(`https://api.spotify.com/v1/tracks/${id}`,{
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            response.json().then(data => alert(data.status_message))
-            return
-        }
-        response.json().then(song => showSong(song))
-    })
-    .catch(error => alert(error))
-}
 function showSong(song){
-    console.log(song)
     document.getElementById("tit").innerHTML=song.name
     document.getElementById("img").src=song.album.images[0].url
     document.getElementById("art").innerHTML=song.artists[0].name

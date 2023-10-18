@@ -41,7 +41,7 @@ for (let i = 0; i < loggedMenuItems.length; i++) {
 }
 function logout(){
     localStorage.removeItem("user");
-    window.location.href = "http://127.0.0.1:3000/login.html"
+    fetch()
 }
 
 const menuElement = document.getElementById('menu');
