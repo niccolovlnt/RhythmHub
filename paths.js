@@ -4,7 +4,7 @@ const crypto=require('crypto')
 const cors=require('cors')
 const express=require('express')
 const path=require('path')
-const cookies=require('js-cookie')
+const cookie=require('cookie')
 const mongo="mongodb+srv://volonteniccolo:olCHDtzs1wtnYLEl@pwm.yfvispg.mongodb.net/?retryWrites=true&w=majority"
 const jwt=require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
@@ -294,3 +294,7 @@ app.get("/spoty/song", auth, function(req, res){
 })
 
 //implementare la rimoazione del token nel logout() in menu.js
+
+app.get("/logout", auth, function(req, res){
+    res.clearCookie("token").redirect("/login")
+})

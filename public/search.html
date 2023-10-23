@@ -78,7 +78,7 @@ rel="stylesheet"
   localStorage.setItem("page", 0)
   function search(query){
     localStorage.setItem("query", query)
-    fetch(`http://127.0.0.1:3000/spoty/search?query=${query}`)
+    fetch(`/spoty/search?query=${query}`)
     .then(response => {
       return response.json()
     })

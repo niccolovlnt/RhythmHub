@@ -98,7 +98,7 @@ rel="stylesheet"
     function deleteAcc(){
         var us=JSON.parse(localStorage.getItem('user'))
         var id=us._id
-        fetch(`http://127.0.0.1:3000/users/${id}`, {
+        fetch(`/users/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

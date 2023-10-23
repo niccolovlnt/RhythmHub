@@ -39,9 +39,10 @@ for (let i = 0; i < loggedMenuItems.length; i++) {
     let item = loggedMenuItems[i];
     loggedMenuHTML += `<li class="nav-item"><a class="nav-link" href="${item.link}">${item.label}</a></li>`;
 }
+
 function logout(){
+    fetch('/logout')
     localStorage.removeItem("user");
-    fetch()
 }
 
 const menuElement = document.getElementById('menu');

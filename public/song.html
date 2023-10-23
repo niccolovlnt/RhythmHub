@@ -84,7 +84,7 @@
 
     <script>
         var id = new URLSearchParams(window.location.search).get('id_song')
-        fetch(`http://127.0.0.1:3000/spoty/song?id=${id}`)
+        fetch(`/spoty/song?id=${id}`)
         .then(response => {
             return response.json()
         })
