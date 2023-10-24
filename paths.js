@@ -296,5 +296,6 @@ app.get("/spoty/song", auth, function(req, res){
 //implementare la rimoazione del token nel logout() in menu.js
 
 app.get("/logout", auth, function(req, res){
-    res.clearCookie("token").redirect("/login")
+    res.clearCookie("token");
+    return res.redirect('/login')
 })

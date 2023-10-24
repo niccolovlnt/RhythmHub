@@ -41,9 +41,10 @@ for (let i = 0; i < loggedMenuItems.length; i++) {
 }
 
 function logout(){
-    fetch('/logout')
     localStorage.removeItem("user");
-}
+    fetch('/logout')
+    window.location.href='/login.html'
+} 
 
 const menuElement = document.getElementById('menu');
 if(localStorage.getItem('user')!=null){
