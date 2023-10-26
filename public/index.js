@@ -42,6 +42,7 @@ function showSearch(charts){
         clone.getElementsByClassName('card-text')[0].innerHTML = charts.tracks.items[i].artists[0].name
         clone.getElementsByClassName('date')[0].innerHTML = charts.tracks.items[i].album.release_date
         clone.getElementsByClassName('album')[0].innerHTML=charts.tracks.items[i].album.name
+        clone.getElementsByClassName('btn-secondary')[0].href="song.html?id_song="+charts.tracks.items[i].id
         clone.classList.remove('d-none')
         card.before(clone)
     }
@@ -54,4 +55,5 @@ function showSong(song){
     document.getElementById("date").innerHTML=song.album.release_date
     document.getElementById("dur").innerHTML=(Math.floor((song.duration_ms/1000/60) << 0)).toString() +":"+ (Math.floor((song.duration_ms/1000) % 60)).toString()
     document.getElementById("gen").innerHTML=song.popularity
+    
 }

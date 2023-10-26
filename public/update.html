@@ -226,24 +226,21 @@ rel="stylesheet"
             }
 }
     //fetch per mostrare i generi da selezionare
-    fetch(`https://api.spotify.com/v1/recommendations/available-genre-seeds`, {
-      headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-     })
-    .then(response => response.json())
-    .then(json => {
-        var generi = document.getElementById("gen")
-        for (i = 0; i < json.genres.length; i++) {
-            var opt = document.createElement("option")
-            opt.value=json.genres[i]
-            opt.innerHTML = json.genres[i]
-            if(opt!=null){
-              generi.appendChild(opt)
-            }      
-        }
-    })
+    fetch('/api/genres')
+  .then(response => {
+    return response.json()
+  })
+  .then(data => {
+    var generi = document.getElementById("gen")
+      for (i = 0; i < data.genres.length; i++) {
+          var opt = document.createElement("option")
+          opt.value=data.genres[i]
+          opt.innerHTML = data.genres[i]
+          if(opt!=null){
+            generi.appendChild(opt)
+          }
+      }
+  })
 
 </script>
 

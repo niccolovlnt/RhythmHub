@@ -13,9 +13,14 @@ const bodyParser=require('body-parser');
 const { log } = require('console');
 const app=express()
 
+//captcha
+// const Recaptcha = require('express-recaptcha').RecaptchaV3
+// var recaptcha=new Recaptcha('6LcO48YoAAAAANyTfxqXOFDJs51Uhzq9JoWFu21h','6LcO48YoAAAAAF8czKhMJTi6pYzSWnY3RaPEEA03')
+
 app.use(express.json())
 app.use(express.static("public"))
 app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded())
 app.use(cookieParser())
 app.use(cors())
 
@@ -117,13 +122,8 @@ async function addUser(res, user) {
 
 app.post("/login", async (req,res)=>{
     var login=req.body
-    if (login.mail == undefined) {
-        res.status(400).send("Missing Email")
-        return
-    }
-    if (login.pass == undefined) {
-        res.status(400).send("Missing Password")
-        return
+    if(login.pass === undefined || login.mail === undefined){
+        res.status(401).send("Wrong e-mail or password.")
     }
     login.pass=hash(login.pass)
     var pwmClient = await new mongoClient(mongo).connect()
@@ -137,8 +137,7 @@ app.post("/login", async (req,res)=>{
         .collection('Users')
         .findOne(filter);
     if (loggedUser==null) {
-    res.status(401).send("Unauthorized")
-    //gestire utente insesistenti o psw sbagliata
+        res.status(401).send("Wrong e-mail or password.")
     } else {
         var token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
         res.cookie('token',token, {httpOnly: true});
@@ -293,7 +292,23 @@ app.get("/spoty/song", auth, function(req, res){
     })
 })
 
-//implementare la rimoazione del token nel logout() in menu.js
+app.get('/api/genres', function(req, res){
+    fetch(`https://api.spotify.com/v1/recommendations/available-genre-seeds`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response => {
+        return response.json()
+    })
+    .then(data => {
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ", e)
+    })
+})
 
 app.get("/logout", auth, function(req, res){
     res.clearCookie("token");
