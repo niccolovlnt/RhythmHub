@@ -80,6 +80,11 @@
                 <label class="form-label opacity-80" for="form3Example4">Password</label>
               </div>
 
+              <div class="form-outline mb-4">
+                <input type="passowrd" id="paas2" class="form-control"/>
+                <label class="form-label opacity-80" for="form3Example4">Repeat password</label>
+              </div>
+
               <!-- Generi -->
               <div>
                 <!-- select genres -->
@@ -87,9 +92,11 @@
                   <select id="gen" class="form-select" multiple="multiple" size="3">
                   </select>
                 </div>
+                
               </div>
               </div>
             </form>
+            <div id="error-message" style="color: red; text-align: center;" class="mb-2"></div>
             <!-- Submit button -->
             <div class="col text-center g-2 ">
               
@@ -101,7 +108,7 @@
                 Sign Up
               </button>
               <div class="text-center link-dark">
-                <p style="color: rgb(72, 112, 196);">Already have an account? <a href="signup.html" style="color: black;" class="opacity-50"><u>Log In here.</u></a></p>
+                <p style="color: rgb(72, 112, 196);">Already have an account? <a href="login.html" style="color: black;" class="opacity-50"><u>Log In here.</u></a></p>
               </div>
             </div>
 
@@ -149,6 +156,7 @@
     var mail=document.getElementById('eemail')
     var pass=document.getElementById('paas')
     var gen=document.getElementById('gen')
+    var errorMessage = document.getElementById('error-message');
 
     var generi_selezionati = document.querySelectorAll("#gen :checked");
     var generi_selezionati_values = []
@@ -172,8 +180,16 @@
       body: JSON.stringify(data)
     })
     .then(response => {
+      if(response.status === 401){
+        return response.text()
+      }
       window.location.href="login.html"
     })  
+    .then(err =>{
+      if(typeof err === 'string'){
+        errorMessage.textContent = err;
+      }
+    })
     .catch(error => {
       console.error("Error: ", error)
     })

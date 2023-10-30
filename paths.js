@@ -79,27 +79,27 @@ app.get('/users', async function(req, res){
 
 async function addUser(res, user) {
     if(user.name==undefined){
-        res.status(400).send("Missing name")
+        res.status(401).send("Missing name")
         return
     }
     if(user.surname==undefined){
-        res.status(400).send("Missing surname")
+        res.status(401).send("Missing surname")
         return
     }
     if (user.username == undefined) {
-        res.status(400).send("Missing username")
+        res.status(401).send("Missing username")
         return
     }
     if (user.mail == undefined) {
-        res.status(400).send("Missing Email")
+        res.status(401).send("Missing Email")
         return
     }
-    if (user.pass == undefined || user.pass.length < 3) {
-        res.status(400).send("Password is missing or too short")
+    if (user.pass == undefined || user.pass.length < 8) {
+        res.status(401).send("Password is missing or too short")
         return
     }
     if(user.genres == undefined){
-        res.status(400).send("Genres not chosen")
+        res.status(401).send("Genres not chosen")
         return
     }
     user.pass = hash(user.pass)
@@ -149,11 +149,11 @@ app.post("/users", function (req, res) {
     addUser(res, req.body)
 })
 
-app.get('/',auth, function (req, res) {
+app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/home.html'));
 })
 
-app.get('/login', function (req, res) {
+app.get('/login', auth, function (req, res) {
     res.sendFile(path.join(__dirname, 'public/login.html'));
 })
 
