@@ -149,11 +149,12 @@ app.post("/users", function (req, res) {
     addUser(res, req.body)
 })
 
-app.get('/', function (req, res) {
+app.get('/', auth, function (req, res) {
     res.sendFile(path.join(__dirname, 'public/home.html'));
 })
 
-app.get('/login', auth, function (req, res) {
+
+app.get('/login', function (req, res) {   
     res.sendFile(path.join(__dirname, 'public/login.html'));
 })
 
@@ -236,7 +237,7 @@ async function updateUser(res, id, updatedUser){
 
 //implementation of frontend requests
 
-app.get("/spoty/tops", auth, function(req, res){
+app.get("/spoty/tops", auth,function(req, res){
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50`, {
         headers: {
             "Content-Type": "application/json",
@@ -313,4 +314,51 @@ app.get('/api/genres', function(req, res){
 app.get("/logout", auth, function(req, res){
     res.clearCookie("token");
     return res.redirect('/login')
+})
+
+// Favorites
+
+async function addFavorites(res, id, song_id) {
+    try {
+        var pwmClient = await new mongoClient(mongo).connect()
+        var filter = { "user_id": new ObjectId(id) }
+        var favorite = {
+            $push: {movie_ids: song_id}
+        }
+        console.log(filter)
+        console.log(favorite)
+        var item = await pwmClient.db("RhythmHub")
+            .collection('Favourites')
+            .updateOne(filter, favorite)
+        res.send(item)
+    } catch (e) {
+        res.status(500).send(`Errore generico: ${e}`)
+    };
+}
+
+app.get('/favorites/:id', async (req, res) => {
+    var id = req.params.id
+    var pwmClient = await new mongoClient(mongo).connect()
+    var favorites = await pwmClient.db("RhythmHub")
+        .collection('Favourites')
+        .findOne({ "user_id": new ObjectId(id) })
+    res.json(favorites)
+})
+
+app.post('/favorites/:id', async (req, res) => {
+   var id = req.params.id
+   song_id = req.body.song_id
+   console.log(song_id)
+   console.log(id)
+   addFavorites(res,id,song_id)
+
+})
+
+app.delete('/favorites/:id', async (req, res) => {
+   var id = req.params.id
+   song_id = req.body.song_id
+   console.log(song_id)
+   console.log(id)
+   removeFavorites(res,id,song_id)
+
 })

@@ -55,5 +55,4 @@ function showSong(song){
     document.getElementById("date").innerHTML=song.album.release_date
     document.getElementById("dur").innerHTML=(Math.floor((song.duration_ms/1000/60) << 0)).toString() +":"+ (Math.floor((song.duration_ms/1000) % 60)).toString()
     document.getElementById("gen").innerHTML=song.popularity
-    
 }

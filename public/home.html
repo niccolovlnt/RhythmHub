@@ -50,7 +50,6 @@
               <p class="duration card-text"></p>
               <div class="card-footer mt-auto ">
                 <a href="#" class="btn btn-secondary btn-block">See more</a>
-                <a href="#" class="btn btn-primary btn-block">Add to favourites</a>
               </div>
               </div>
             </div> 
@@ -129,6 +128,20 @@ rel="stylesheet"
           console.error("Error:", e)
         })  
       }
+      }
+
+      function addSong(){
+        var us=localStorage.getItem(user._id)
+        fetch(`/favorites/${us}`,{
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify({"song_id": id}) //id della canzone, come faccio?
+        })
+        .then(response => {
+          getPreferiti() //mostra preferiti?
+        })
       }
 
     </script>
