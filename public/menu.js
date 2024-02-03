@@ -1,34 +1,15 @@
 const menuItems = [
-    { label: "Home", link: "home.html" },
     { label: "Log In", link: "login.html" },
     { label: "Sign Up", link: "signup.html" },
-    { label: "Search", link: "search.html"},
 ]
 const loggedMenuItems=[
     { label: "Home", link: "home.html" },
     { label: "Search", link: "search.html"},
+    { label: "My Playlists", link: "playlist.html"},
+    { label: "My Account", link: "settings.html"},
 ]
 var dropdown="<div></div>"
 
-if(localStorage.getItem('user')!=null){
-    var user = JSON.parse(localStorage.getItem('user'))
-    //console.log(localStorage.getItem('user'))
-    //console.log(user)
-    //var filter=menuItems.filter(item => item.label !=="Log In")
-    var dropdown = `
-        <div class="nav-item dropdown d-flex">
-            <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                Welcome ${user.name}
-            </button>
-            <ul class="dropdown-menu ms-auto me-2">
-                <li>
-                    <a class="dropdown-item" href="playlist.html">My Playlists</a>
-                    <a class="dropdown-item" href="settings.html">My Account</a>
-                    <a class="dropdown-item" onclick="logout()">Logout</a>
-                </li>
-            </ul>
-        </div>`;
-}
 var menuHTML = "";
 for (let i = 0; i < menuItems.length; i++) {
     let item = menuItems[i];
@@ -48,46 +29,57 @@ function logout(){
 
 const menuElement = document.getElementById('menu');
 if(localStorage.getItem('user')!=null){
-    menuElement.innerHTML=`<nav class="navbar bg-primary">
+    menuElement.innerHTML=`
+    <nav class="navbar bg-primary fixed-top">
     <div class="container-fluid">
-    <div class="navbar-brand d-flex justify-content-start">
-        
-        <img src="iconPNG.png" alt="Logo" width="35" height="35" class="align-text-top">
-        <span class="d-none d-sm-none d-md-inline">RhythmHub</span>
+    <div class="navbar-brand">
+        <img src="iconPNG.png" alt="Logo" width="35" height="35">
+        <span style="color: white; margin 5px; margin-top: 5px;">RhythmHub</span>
     </div>
-    <div class="d-flex justify-content-end">
-        ${dropdown}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <ul class="navbar-nav flex-column">
-            ${loggedMenuHTML}
-            </ul>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-    </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          ${loggedMenuHTML}
+          <li onclick="logout()"> Logout </li>
+          </ul>
+        </div>
+      </div>
+
+
+
+
     </div>
 </nav>`;
 }else{
     menuElement.innerHTML=`
-<nav class="navbar bg-primary">
+    <nav class="navbar bg-primary fixed-top">
     <div class="container-fluid">
-    <div class="navbar-brand d-flex justify-content-start">
-        
-        <img src="iconPNG.png" alt="Logo" width="35" height="35" class="align-text-top">
-        <span class="d-none d-sm-none d-md-inline">RhythmHub</span>
+    <div class="navbar-brand">
+        <img src="iconPNG.png" alt="Logo" width="35" height="35">
+        <span style="color: white; margin 5px; margin-top: 5px;">RhythmHub</span>
     </div>
-    <div class="d-flex justify-content-end">
-        ${dropdown}
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <ul class="navbar-nav flex-column">
-            ${menuHTML}
-            </ul>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-    </div>
-    </div>
-</nav>`;
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          ${menuHTML}
+          </ul>
+        </div>
+      </div>
+      `;
 }

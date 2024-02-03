@@ -71,7 +71,7 @@ function hash(input) {
         .digest('hex')
 }
 
-app.get('/users', async function(req, res){
+app.get('/users', auth, async function(req, res){
     var client=await new mongoClient(mongo).connect()
     var users=await client.db("RhythmHub").collection("Users").find().project({"pass":0}).toArray()
     res.json(users)
@@ -166,6 +166,10 @@ app.get('/signup', function (req, res) {
     res.sendFile(path.join(__dirname, 'public/signup.html'));
 })
 
+app.get('/playlist', auth, function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/playlist.html'));
+})
+
 app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")
 })
@@ -255,6 +259,25 @@ app.get("/spoty/tops", auth,function(req, res){
     })
 })
 
+app.get("/spoty/song/:id", function(req, res){
+    var id=req.params.id
+    fetch(`https://api.spotify.com/v1/tracks/${id}`,{
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response => {
+        return response.json()
+    })
+    .then(data =>{
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ", e)
+    })
+})
+
 app.get("/spoty/search", auth, function(req, res){
     var query=req.query.query
     fetch(`https://api.spotify.com/v1/search?q=${query}&type=track%2Cartist&market=IT&limit=50`, {
@@ -323,10 +346,10 @@ async function addFavorites(res, id, song_id) {
         var pwmClient = await new mongoClient(mongo).connect()
         var filter = { "user_id": new ObjectId(id) }
         var favorite = {
-            $push: {movie_ids: song_id}
+            $push: {song_ids: song_id}
         }
-        console.log(filter)
-        console.log(favorite)
+        // console.log(filter)
+        // console.log(favorite)
         var item = await pwmClient.db("RhythmHub")
             .collection('Favourites')
             .updateOne(filter, favorite)
@@ -336,8 +359,89 @@ async function addFavorites(res, id, song_id) {
     };
 }
 
+async function deletePlaylist(res, id){
+    try{
+        var pwmClient = await new mongoClient(mongo).connect()
+        var filter = { "user_id": new ObjectId(id) }
+        var item = await pwmClient.db("RhythmHub")
+            .collection('Favourites')
+            .deleteOne(filter)
+        res.send(item)
+    } catch (e) {
+        res.status(500).send(`Errore generico: ${e}`)
+    };
+}
+
+async function createPlaylist(res, play){
+    try{
+        var pwmClient = await new mongoClient(mongo).connect();
+        var item = await pwmClient.db("RhythmHub")
+            .collection('Favourites')
+            .insertOne({ user_id: new ObjectId(play.user_id), 
+                name: play.plname, 
+                description: play.pldesc, 
+                song_ids: [], 
+                tags: play.pltags, 
+                visibility: play.plvis});
+        res.send(item);
+    } catch (e) {
+        console.error(e); 
+        res.status(500).send(`Errore generico: ${e}`);
+    }
+}
+
+async function removeFavorites(res, id, song_id){
+    try{
+        var pwmClient = await new mongoClient(mongo).connect()
+        var filter = { "user_id": new ObjectId(id) }
+        var update = {
+            $pull: {song_ids: song_id}
+        }
+        var item = await pwmClient.db("RhythmHub")
+            .collection('Favourites')
+            .updateOne(filter, update)
+        res.send(item)
+    } catch (e) {
+        res.status(500).send(`Errore generico: ${e}`)
+    };
+}
+
+app.get('/favorites/show/:id', async (req,res) => {
+    try{
+    var pwmClient = await new mongoClient(mongo).connect()
+    var favorites = await pwmClient.db("RhythmHub")
+        .collection('Favourites')
+        .find({"_id": new ObjectId(req.params.id)})
+        .toArray()
+        res.json(favorites)
+    }
+    catch (error){
+        console.error('Error occurred while fetching playlists:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+})
+
+app.get('/favorites/showplay', async (req,res) => {
+    try{
+    var pwmClient = await new mongoClient(mongo).connect()
+    var favorites = await pwmClient.db("RhythmHub")
+        .collection('Favourites')
+        .find({"visibility": "1"})
+        .toArray()
+    const fav = JSON.stringify(favorites);
+    res.json(JSON.parse(fav))
+    } catch (error){
+        console.error('Error occurred while fetching playlists:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+})
+
 app.get('/favorites/:id', async (req, res) => {
     var id = req.params.id
+    // Check if id is a valid 24-character hexadecimal string
+    if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid id.' });
+    }
     var pwmClient = await new mongoClient(mongo).connect()
     var favorites = await pwmClient.db("RhythmHub")
         .collection('Favourites')
@@ -345,20 +449,41 @@ app.get('/favorites/:id', async (req, res) => {
     res.json(favorites)
 })
 
-app.post('/favorites/:id', async (req, res) => {
-   var id = req.params.id
-   song_id = req.body.song_id
-   console.log(song_id)
-   console.log(id)
-   addFavorites(res,id,song_id)
-
+app.post('/favorites/addsong/:id', auth, async (req, res) => {
+    var id = req.params.id;
+    var song_id = req.body.song_id;
+    // console.log(song_id);
+    // console.log(id);
+    addFavorites(res, id, song_id);
 })
 
-app.delete('/favorites/:id', async (req, res) => {
+app.delete('/favorites/remove/:id', auth, async (req, res) => {
+    deletePlaylist(res, req.params.id)
+})
+
+app.delete('/favorites/:id', auth, async (req, res) => {
    var id = req.params.id
    song_id = req.body.song_id
-   console.log(song_id)
-   console.log(id)
+//    console.log(song_id)
+//    console.log(id)
    removeFavorites(res,id,song_id)
+})
 
+app.post('/favorites/create', async (req,res) => {
+    //console.log(req.body)
+    createPlaylist(res, req.body)
+})
+
+app.get('/favorites/chkpl/:id', auth, async (req,res) => {
+    var id=req.params.id
+    var pwmClient = await new mongoClient(mongo).connect()
+    var favorites = await pwmClient.db("RhythmHub")
+        .collection('Favourites')
+        .findOne({ "user_id": new ObjectId(id) })
+    // console.log(favorites)
+    if(favorites==null){
+        res.status(404).send("Playlist not found")
+    }else{
+        res.status(200).send("Playlist found")
+    }
 })
