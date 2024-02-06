@@ -18,27 +18,19 @@
   <div>
     <div id="menu"></div>
 
-    <div class="container" style="margin-top: 70px;">
+    <div class="container" style="margin-top: 80px;">
       <div class="row justify-content-center">
           <div class="col-lg-6 col-sm-12">
-              <div class="form-floating">
-                  <input type="search" id="form1" class="form-control" onkeyup="search(this.value)" placeholder="Search"/>
-                  <label class="form-label" for="form1">Search</label>
-              </div>
+
+            <div class="input-group">
+              <span class="input-group-text">Search</span>
+              <input type="search" id="form1" class="form-control" onkeyup="search(this.value)" aria-label="Search" placeholder="Artist, Song Name"/>
+              <input type="search" aria-label="Playlists" class="form-control" onkeyup="searchPlay(this.value)" placeholder="Playlist Name">
+              <input type="search" aria-label="Tags" class="form-control" onkeyup="searchTags(this.value)" placeholder="Tags">
+            </div>
           </div>
       </div>
   </div>
-
-
-    <!-- <div class="input-group p-4" style="margin-top: 60px;">
-      <div class="form-outline">
-        <input type="search" id="form1" class="form-control" onkeyup="search(this.value)"/>
-        <label class="form-label" for="form1">Search</label>
-      </div>
-      <button type="button" class="btn btn-primary">  
-        <i class="fas fa-search"></i>
-      </button>
-    </div> -->
 
     <div class="col text-center g-4 p-4 d-none" id="picker">
       <div class="btn-group" role="group">
@@ -47,12 +39,10 @@
       </div>
     </div>
 
-    <div>
-      <div class="d-flex">
-      <div class="container">
+      <div class="container mt-3">
         <div id="playlist-container" class="row justify-content-center g-4 p-2">
-          <div id="playlist-card" class=" col-lg-3 col-md-6 col-sm-12 d-none text-center">
-            <div class="card h-100" style="width: 18rem;">
+          <div id="playlist-card" class="col-6 col-lg-6 col-xl-3 d-none text-center">
+            <div class="card h-100 mx-auto" style="width: 18rem;">
               <img src="" class="card-img-top">
               <div class="card-body d-flex flex-column">
               <h5 class="card-title text-primary"><strong></strong></h5>
@@ -60,16 +50,51 @@
               <p class="album card-text text-body-secondary"></p>
               <p class="date card-text"></p>
               <div class="d-grid gap-2">
-                <a href="#" class="btn btn-secondary btn-block g-2 ">See More</a>
-                <a href="#" class="btn btn-primary btn-block g-2" onclick="addSong(this.getAttribute('href')); return false;">Add to Playlist</a>
+                <a href="#" class="fav1 btn btn-secondary btn-block g-2 d-none" id="fav1">See Song</a>
+                <a href="#" class="fav2 btn btn-secondary btn-block g-2 d-none" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="fav2" onclick="showPlHm(this.getAttribute('href')); return false;">See More</a>
+                <a href="#" class="fav3 btn btn-primary btn-block g-2" onclick="addSong(this.getAttribute('href')); return false;" id="fav3">Add to Playlist</a>
               </div>
               </div>
             </div> 
           </div>   
         </div>
       </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="plnamemodal"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+          <div class="modal-body">
+          <p id="pldescmodal"></p>
+          <p id="pltagsmodal"></p>
+          <p id="plvismodal"></p>
+          
+          <div class="container" id="song-container">
+            <div class="card d-none" id="song-card">
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col-sm-6">
+                          <img class="song-im" src="" alt="Image" style="max-width: 50%; height: auto; border-radius: 50%;">
+                      </div>
+                      <div class="col-sm-6 text-center">
+                          <h3 class="song-title"></h3>
+                          <p class="song-artist"></p>
+
+                      </div>
+                  </div>
+              </div>                      
+            </div>                                                                    
+          </div>
+
+
+
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
       </div>
-    </div>
 
   </div>
   <!-- Font Awesome -->
@@ -88,19 +113,63 @@ rel="stylesheet"
 <script src="index.js"></script>
 <script>
   localStorage.setItem("page", 0)
-  function search(query){
+
+  function resetButtons() {
+    document.getElementById("fav1").classList.add("d-none");
+    document.getElementById("fav2").classList.add("d-none");
+  }
+
+function search(query){
+  resetButtons()
+  localStorage.setItem("query", query)
+  fetch(`/spoty/search?query=${query}`)
+  .then(response => {
+    return response.json() 
+  })
+  .then(data =>{
+    document.getElementById("fav1").classList.remove("d-none")
+    document.getElementById("fav2").classList.add("d-none")
+    showSearch(data)
+  })
+  .catch(e => {
+    console.error("Error:", e)
+  })
+}
+
+function searchPlay(query){
+  resetButtons()
     localStorage.setItem("query", query)
-    fetch(`/spoty/search?query=${query}`)
+    fetch(`/favorites/searchplay?query=${query}`)
     .then(response => {
       return response.json()
     })
     .then(data =>{
-      showSearch(data)
+      document.getElementById("fav2").classList.remove("d-none") 
+      document.getElementById("fav1").classList.add("d-none")
+      showSearchPlay(data)
     })
     .catch(e => {
       console.error("Error:", e)
     })
-  }
+}
+
+function searchTags(query){
+    resetButtons()
+    localStorage.setItem("query", query)
+    fetch(`/favorites/searchtags?query=${query}`)
+    .then(response => {
+      return response.json()
+    })
+    .then(data =>{
+      document.getElementById("fav2").classList.remove("d-none") 
+      document.getElementById("fav1").classList.add("d-none")
+      showSearchTags(data)
+    })
+    .catch(e => {
+      console.error("Error:", e)
+    })
+}
+
   
   function psongs(){
     var pg=parseInt(localStorage.getItem("page"), 10) || 0
@@ -117,8 +186,7 @@ rel="stylesheet"
       search(localStorage.getItem("query"))
     }
   }
-  
-  
+
 </script>
 <!-- MDB -->
     <script

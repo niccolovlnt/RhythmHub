@@ -1,11 +1,5 @@
 // Purpose: This file contains the functions that are used to display the data from the API on the front end.
 
-var showHTMl=`
-
-`
-
-
-
 function showTop(charts){
     var pg=parseInt(localStorage.getItem("page"), 10) || 0
     document.getElementById('playname').innerHTML=charts.name
@@ -89,6 +83,7 @@ function addSong(id){
     })
 }
 
+// function to  show playlist on homepage
 async function showPls(charts){
     // var pg=parseInt(localStorage.getItem("page"), 10) || 0
     // document.getElementById('playname').innerHTML=charts.name
@@ -114,17 +109,17 @@ async function showPls(charts){
             }
         }
         clone.getElementsByClassName('fav1')[0].href=charts[i]._id
-        // clone.getElementsByClassName('fav2')[0].href=charts.tracks.items[i].track.id
+        clone.getElementsByClassName('fav2')[0].href=charts[i]._id
         clone.classList.remove('d-none')
         card.before(clone)
     }
 }
 
+//function to open modal related to playlist
 async function showPlHm(id){
     try{
         var response = await fetch(`/favorites/show/${id}`)
         var data = await response.json()
-        console.log(data)
         var plname=document.getElementById('plnamemodal')
         var pldesc=document.getElementById('pldescmodal')
         var pltags=document.getElementById('pltagsmodal')
@@ -170,6 +165,9 @@ async function showPlHm(id){
 async function getUser(id){
     return fetch("/users")
     .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json()
     })
     .then(data => {
@@ -182,4 +180,69 @@ async function getUser(id){
     .catch(err => {
         console.log(err);
     })
+}
+
+async function showSearchPlay(charts){
+    if(charts.length > 3){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
+    var picker=document.getElementById("picker")
+    picker.classList.remove('d-none')
+    }
+    var card=document.getElementById("playlist-card")
+    var container = document.getElementById("playlist-container")
+    container.innerHTML = ""
+    container.append(card)
+
+    for(var i=0;i<charts.length;i++) {
+        if(charts[i].name != ''){
+        var clone=card.cloneNode(true)
+        clone.id = 'playlist-card-' + i
+        }
+        clone.getElementsByClassName('card-title')[0].innerHTML = charts[i].name
+        clone.getElementsByClassName('card-text')[0].innerHTML = "by @" + await getUser(charts[i].user_id)
+        clone.getElementsByClassName('date')[0].innerHTML = "Tags: "
+        for(let j=0; j<charts[i].tags.length; j++){
+            if(j == 0) {
+                clone.getElementsByClassName('date')[0].innerHTML += charts[i].tags[j];
+            } else {
+                clone.getElementsByClassName('date')[0].innerHTML += ", " + charts[i].tags[j];
+            }
+        }
+        //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
+        clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.classList.remove('d-none')
+        card.before(clone)
+    }
+}
+
+async function showSearchTags(charts){
+    var pg=parseInt(localStorage.getItem("page"), 10) || 0
+    var picker=document.getElementById("picker")
+    picker.classList.remove('d-none')
+    var card=document.getElementById("playlist-card")
+    var container = document.getElementById("playlist-container")
+    container.innerHTML = ""
+    container.append(card)
+
+    for(var i=0;i<charts.length;i++) {
+        if(charts[i].name != ''){
+        var clone=card.cloneNode(true)
+        clone.id = 'playlist-card-' + i
+        }
+        clone.getElementsByClassName('card-title')[0].innerHTML = charts[i].name
+        clone.getElementsByClassName('card-text')[0].innerHTML = "by @" + await getUser(charts[i].user_id)
+        clone.getElementsByClassName('date')[0].innerHTML = "Tags: "
+        for(let j=0; j<charts[i].tags.length; j++){
+            if(j == 0) {
+                clone.getElementsByClassName('date')[0].innerHTML += charts[i].tags[j];
+            } else {
+                clone.getElementsByClassName('date')[0].innerHTML += ", " + charts[i].tags[j];
+            }
+        }
+        //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
+        // clone.getElementsByClassName('fav2')[0].href=charts.tracks.items[i].track.id
+        clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.classList.remove('d-none')
+        card.before(clone)
+    }
 }

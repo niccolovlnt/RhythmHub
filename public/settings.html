@@ -82,29 +82,47 @@ rel="stylesheet"
     if(localStorage.getItem('user')!=null){
         var user=JSON.parse(localStorage.getItem('user'))
         document.getElementById('username').innerHTML= "@"+user.username
-        document.getElementById("name").innerHTML=user.name
+        document.getElementById('name').innerHTML=user.name
         document.getElementById('surname').innerHTML=user.surname
         document.getElementById('email').innerHTML=user.mail
-        document.getElementById('genres').innerHTML=user.genres
+        for(let i=0;i<user.genres.length;i++){
+            if(i== 0){
+                document.getElementById('genres').innerHTML=user.genres[i]
+            }
+            else{
+                document.getElementById('genres').innerHTML+= ", " +user.genres[i]
+            }
+        }
     }
 
+    // delete the user and all of its playlists
     function deleteAcc(){
-        var us=JSON.parse(localStorage.getItem('user'))
-        var id=us._id
-        fetch(`/users/${id}`, {
+    var us=JSON.parse(localStorage.getItem('user'))
+    var id=us._id
+    // First delete the user's playlists
+    fetch(`/favorites/user/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then( async response => {
+        // After deleting the playlists, delete the user
+        return fetch(`/users/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
             }
-        })
-        .then( async response => {
-            //localStorage.removeItem('user')
-            window.location.href="signup.html"
-        })
-        .catch(error => {
-            console.error("error: "+ error)
-        })
-    }
+        });
+    })
+    .then( async response => {
+        localStorage.removeItem('user')
+        window.location.href="login.html"
+    })
+    .catch(error => {
+        console.error("error: "+ error)
+    })
+}
 </script>
 
   </body>

@@ -106,7 +106,7 @@ rel="stylesheet"
       pass: pass.value,
     }
     //console.log(user) ok, prende correttamente i dati
-    fetch("http://127.0.0.1:3000/login", {
+    fetch("/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -124,7 +124,7 @@ rel="stylesheet"
         errorMessage.textContent = loggedUser;
       }else{
         localStorage.setItem('user', JSON.stringify(loggedUser))
-        window.location.href="http://127.0.0.1:3000"
+        window.location.href="home.html"
       }
 
     })

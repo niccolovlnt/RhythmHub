@@ -1,4 +1,6 @@
 const playlistElement = document.getElementById('playlistElement');
+
+//display playlist card when accessing the page
 if(localStorage.getItem('user')!=null){
     var user = JSON.parse(localStorage.getItem('user'))
     var id=user._id
@@ -10,15 +12,87 @@ if(localStorage.getItem('user')!=null){
                 fetch(`/favorites/${id}`)
                 .then(response => {
                     if(response.status === 200){
-                        response.json().then(data => {
-                            // console.log(data)
-                            var plname=document.getElementById('plname')
-                            var pldesc=document.getElementById('pldesc')
-                            var username=document.getElementById('username')
-                            document.getElementById('htag').classList.remove('d-none')
-                            plname.innerHTML=data.name
-                            pldesc.innerHTML=data.description
-                            username.innerHTML=user.username
+                        response.json().then(async data => {
+                            var card=document.getElementById('pl-card')
+                            var container=document.getElementById('pl-cont')
+                            container.innerHTML = "" // Clear the container
+                            container.append(card)
+                            for (let i=0;i<data.length;i++){
+                                if(data[i].name != ''){
+                                    var clone=card.cloneNode(true)
+                                    clone.id = 'pl-card-' + i
+                                }
+                                clone.getElementsByClassName('plname')[0].innerHTML = data[i].name
+                                clone.getElementsByClassName('pldesc')[0].innerHTML = data[i].description
+                                clone.getElementsByClassName('username')[0].innerHTML = user.username
+                                clone.getElementsByClassName('htag')[0].classList.remove('d-none')
+                                if(data[i].imported_from){
+                                    clone.getElementsByClassName('imported')[0].innerHTML = "imported from: " + await getUser(data[i].imported_from)
+                                    clone.getElementsByClassName('imported')[0].classList.remove('d-none')
+                                }
+                                clone.getElementsByClassName('songid')[0].href = data[i]._id
+                                clone.getElementsByClassName('pl-id')[0].href = data[i]._id
+                                clone.classList.remove('d-none')
+                                card.before(clone)
+                            
+                                // Clone the modal for each playlist
+                                var modalTemplate = document.getElementById('staticBackdrop');
+                                var modal = modalTemplate.cloneNode(true);
+                                modal.id = 'modal-' + i;
+                            
+                                // Update the modal's content
+                                var plname = modal.querySelector('#plnamemodal');
+                                var pldesc = modal.querySelector('#pldescmodal');
+                                var pltags = modal.querySelector('#pltagsmodal');
+                                var plvis = modal.querySelector('#plvismodal');
+                            
+                                plname.innerHTML = data[i].name;
+                                pldesc.innerHTML = "Description: " + data[i].description;
+                                pltags.innerHTML = "Tags: " + data[i].tags.join(', ');
+                                plvis.innerHTML = data[i].visibility == 1 ? "Public" : "Private";
+                                
+                                // Update the "Show Songs" button to target the correct modal
+                                var showSongsButton = clone.querySelector('[data-bs-toggle="modal"]');
+                                showSongsButton.setAttribute('data-bs-target', '#modal-' + i);
+                            
+                                // Append the modal to the document body
+                                document.body.appendChild(modal);
+                            
+                                // Use an IIFE to create a new scope for each iteration of the loop
+                                (function(i, modal) {
+                                    for (let k = 0; k < data[i].song_ids.length; k++) {
+                                        fetch(`/spoty/song/${data[i].song_ids[k]}`)
+                                            .then(songResponse => {
+                                                if(songResponse.status === 200){
+                                                    return songResponse.json();
+                                                } else {
+                                                    throw new Error('Error status: ' + songResponse.status);
+                                                }
+                                            })
+                                            .then(songData => {
+                                                // Append the songs to the correct modal
+                                                var songCardTemplate = modal.querySelector('#song-card');
+                                                var modalBody = modal.querySelector('.modal-body');
+                            
+                                                var songCard = songCardTemplate.cloneNode(true);
+                                                songCard.id = 'playlist-card-' + i;
+                                                songCard.getElementsByClassName('song-title')[0].innerHTML = songData.name;
+                                                songCard.getElementsByClassName('song-artist')[0].innerHTML = songData.artists[0].name;
+                                                songCard.getElementsByClassName('song-im')[0].src = songData.album.images[0].url;
+                                                songCard.getElementsByClassName('rmsong')[0].setAttribute('data-song-id', data[i].song_ids[k]);
+                                                songCard.classList.remove('d-none');
+                            
+                                                modalBody.appendChild(songCard);
+                                            })
+                                            .catch(error => {
+                                                console.log(error)
+                                            });
+                                    }
+                                })(i, modal);
+                            }
+                            card.remove()
+                            card.remove()
+                            card.remove()
                         })
                     }
                 })
@@ -93,6 +167,7 @@ var noplaylist=`
                         </div>
                     </div>
                 </div>
+
             </div>
           </div>
         </div>
@@ -101,14 +176,71 @@ var noplaylist=`
 var okplaylist=`
 <div class="row p-3 g-2">
         <div class="col-sm-12 mb-3 mb-sm-0">
-          <div class="card">
+
+        <div class="container"> 
+        <div class="card mt-3">
             <div class="card-body">
-            <h5 class="card-title"> <span id="plname"></span> <span id="htag" class="d-none" style="font-size: smaller; opacity: 0.5;"> by @<span id="username"></span></span></h5>
-            <p class="card-text" id="pldesc"></p>
-              <a class="btn btn-primary p-2" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'} onclick="addSong()">Add song</a>
-              <a class="btn btn-secondary p-2" onclick="deletePl()">Delete Playlist</a>
+                <a type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Create a new one here</a>
+            </div>
+        </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">New Playlist</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="plname" placeholder="Playlist Name">
+                    <label for="floatingInput">Playlist Name</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" placeholder=Description id="pldesc"></textarea>
+                    <label for="floatingTextarea">Description</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                <textarea class="form-control" placeholder=Tags id="pltags"></textarea>
+                <label for="floatingTextarea">Tags</label>
+                </div>
+
+                <div class="form-floating">
+                <select class="form-select" id="plvis" aria-label="Visibility">
+                  <option selected>Open this select menu</option>
+                  <option value="1">Public</option>
+                  <option value="2">Private</option>
+                </select>
+                <label for="floatingSelect">Visibility</label>
+                </div>
+
+
+
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createPl()">Create</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container" id="pl-cont">
+        <div class="card mt-3" id="pl-card">
+            <div class="card-body">
+            <h5 class="card-title"> <span id="plname" class="plname"></span> <span id="htag" class="htag d-none" style="font-size: smaller; opacity: 0.5;"> by @<span id="username" class="username"></span></span></h5>
+            <p class="card-text imported" style="opacity: 50%;"></p>
+            <p class="card-text pldesc" id="pldesc"></p>
+            <a href="#" class="btn btn-primary p-2 songid" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'} onclick="addSong(this.getAttribute('href')); return false;">Add song</a>
+            <a href="#" class="btn btn-secondary p-2 pl-id" onclick="deletePl(this.getAttribute('href')); return false;")">Delete Playlist</a>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showPl()">Show Songs</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show Songs</button>
 
               <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -144,11 +276,11 @@ var okplaylist=`
                             </div>                        
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
             </div>
+          </div>
           </div>
         </div>
 </div>
@@ -185,8 +317,9 @@ function createPl() {
     return
 }
 
-function addSong() {
-    fetch(`/favorites/addsong/${user._id}`, {
+// add song to playlist
+function addSong(playId) {
+    fetch(`/favorites/addsong/${playId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -210,57 +343,11 @@ function addSong() {
     });
 }
 
-async function showPl(){
-    var user = JSON.parse(localStorage.getItem('user'))
-    var id=user._id
-    try {
-        let response = await fetch(`/favorites/${id}`)
-        if(response.status === 200){
-            let data = await response.json()
-            var plname=document.getElementById('plnamemodal')
-            var pldesc=document.getElementById('pldescmodal')
-            var pltags=document.getElementById('pltagsmodal')
-            var plvis=document.getElementById('plvismodal')
-            var card=document.getElementById('song-card')
-            plname.innerHTML=data.name
-            pldesc.innerHTML= "Description: "+data.description
-            pltags.innerHTML= "Tags: "
-            for(let i=0; i<data.tags.length; i++){
-                if(i!=0){
-                pltags.innerHTML+=", "+data.tags[i]
-                }else{
-                    pltags.innerHTML+=data.tags[i]
-                }
-            }
-            if(data.visibility == 1){
-                plvis.innerHTML="Public"
-            }else{
-                plvis.innerHTML="Private"
-            }
-            
 
-            for (let i = 0; i < data.song_ids.length; i++) {
-                let songResponse = await fetch(`/spoty/song/${data.song_ids[i]}`)
-                if(songResponse.status === 200){
-                    let songData = await songResponse.json()
-                    var clone=card.cloneNode(true)
-                    clone.id = 'playlist-card-' + i
-                    clone.getElementsByClassName('song-title')[0].innerHTML=songData.name
-                    clone.getElementsByClassName('song-artist')[0].innerHTML=songData.artists[0].name
-                    clone.getElementsByClassName('song-im')[0].src=songData.album.images[0].url
-                    clone.getElementsByClassName('rmsong')[0].setAttribute('data-song-id', data.song_ids[i])
-                    clone.classList.remove('d-none')
-                    card.after(clone)
-                }
-            }
-        }
-    } catch(error) {
-        console.log(error)
-    }
-}
-
-function deletePl(){
-    fetch(`/favorites/remove/${user._id}`, {
+// delete playlist by id, works for multiple too
+function deletePl(playlistId){
+    console.log(playlistId);
+    fetch(`/favorites/remove/${playlistId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
@@ -277,6 +364,7 @@ function deletePl(){
     
 }
 
+// delete song from playlist, to fix yet
 function deleteSg(songid){
     fetch(`/favorites/${user._id}`, {
         method: 'DELETE',
@@ -292,5 +380,25 @@ function deleteSg(songid){
     })
     .catch(error => {
         console.log(error)
+    })
+}
+
+async function getUser(id){
+    return fetch("/users")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json()
+    })
+    .then(data => {
+        for (let i = 0; i < data.length; i++) {
+            if(data[i]._id == id){
+                return data[i].username
+            }
+        }
+    })
+    .catch(err => {
+        console.log(err);
     })
 }

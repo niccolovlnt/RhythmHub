@@ -57,14 +57,20 @@
 
 
               <!-- Nome -->
-              <div class="form-floating mb-4">
-                <input type="name" id="name" class="form-control" placeholder="Name"/>
-                <label class="form-label opacity-80" for="formusername">Name</label>
-              </div>
-              <!-- Cognome -->
-              <div class="form-floating mb-4">
-                <input type="surname" id="surname" class="form-control" placeholder="Surname"/>
-                <label class="form-label opacity-80" for="formusername">Surname</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating mb-4">
+                    <input type="text" id="name" class="form-control" placeholder="Name"/>
+                    <label class="form-label opacity-80" for="name">Name</label>
+                  </div>
+                </div>
+              
+                <div class="col-md-6">
+                  <div class="form-floating mb-4">
+                    <input type="text" id="surname" class="form-control" placeholder="Surname"/>
+                    <label class="form-label opacity-80" for="surname">Surname</label>
+                  </div>
+                </div>
               </div>
               <!-- Username Input -->
                 <div class="form-floating mb-4">
@@ -79,28 +85,43 @@
               </div>
 
               <!-- Password input -->
-              <div class="form-floating mb-4">
-                <input type="password" id="paas" class="form-control" placeholder="Password"/>
-                <label class="form-label opacity-80" for="form3Example4">Password</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-floating mb-4">
+                    <input type="password" id="paas" class="form-control" placeholder="Password"/>
+                    <label class="form-label opacity-80" for="paas">Password</label>
+                  </div>
+                </div>
+              
+                <div class="col-md-6">
+                  <div class="form-floating mb-4">
+                    <input type="password" id="paas2" class="form-control" placeholder="Repeat Password"/>
+                    <label class="form-label opacity-80" for="paas2">Repeat password</label>
+                  </div>
+                </div>
               </div>
 
-              <div class="form-floating mb-4">
-                <input type="passowrd" id="paas2" class="form-control" placeholder="Repeat Password"/>
-                <label class="form-label opacity-80" for="form3Example4">Repeat password</label>
-              </div>
 
-              <!-- Generi -->
-              <div>
                 <!-- select genres -->
-                <div class="input-group">
-                  <select id="gen" class="form-select" multiple="multiple" size="3">
-                  </select>
+                <div class="row">
+                  <div class="col-md-6 text-center">
+                    <p class="text-center opacity-70"><small>Choose your favourite genres:</small></p>
+                    <div class="input-group">
+                      <select id="gen" class="form-select" multiple="multiple" size="3">
+                      </select>
+                    </div>
+                  </div>
+                
+                  <div class="col-md-6 text-center">
+                    <p class="text-center opacity-70"><small>Choose your favourite artists:</small></p>
+                    <div class="input-group">
+                      <select id="art" class="form-select" multiple="multiple" size="3">
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
 
-
-                
-              </div>
               </div>
             </form>
             <div id="error-message" style="color: red; text-align: center;" class="mb-2"></div>
