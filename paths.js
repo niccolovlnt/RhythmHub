@@ -245,9 +245,24 @@ async function updateUser(res, id, updatedUser){
 
 //implementation of frontend requests
 
-app.get('spoty/artists', auth, function(req, res){
-    fetch
-})
+// app.get('/spoty/artists', function(req, res){
+//     var query=req.query.query
+//     fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=50`, {
+//         headers: {
+//             "Content-Type": "application/json",
+//             Authorization: "Bearer " + spotytoken,
+//         },
+//     })
+//     .then(response => {
+//         return response.json()
+//     })
+//     .then(data =>{
+//         res.json(data)
+//     })
+//     .catch(e =>{
+//         console.error("Error: ", e)
+//     })
+// })
 
 app.get("/spoty/tops", auth,function(req, res){
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50`, {
