@@ -174,7 +174,7 @@ app.get('/playlist', auth, function (req, res) {
 //     console.log("Server Initialized")
 // })
 
-app.listen(3000, "127.0.0.1", ()=>{
+app.listen(3000, "0.0.0.0", ()=>{
     console.log("Server Initialized")
 })
 
