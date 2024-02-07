@@ -18,7 +18,7 @@
 
   <style>
     @media (max-width: 600px) {
-      .card {
+      .cardDisplay {
         max-width: 10rem;
       }
     }
@@ -35,19 +35,19 @@
             <small id="playfoll" class="text-body-secondary"></small>
           </h3>
         </div>
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <div class="btn-group d-none" role="group" id="prevnext">
             <button type="button" class="btn btn-primary"  onclick="psongs()">Previous</button>
             <button type="button" class="btn btn-primary"  onclick="nsongs()">Next</button>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <div class="container">
       <div id="playlist-container" class="row justify-content-center g-4 p-2">
         <div id="playlist-card" class="col-6 col-lg-6 col-xl-3 d-none text-center">
-          <div class="card h-100 mx-auto" style="width: 18rem;">
+          <div class="card cardDisplay h-100 mx-auto" style="width: 18rem;">
               <img src="" class="card-img-top">
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title text-primary"><strong></strong></h5>
@@ -68,6 +68,12 @@
       </div>
     </div>
 
+      <div class="d-flex align-items-center justify-content-center pt-3">
+        <div class="btn-group d-none" role="group" id="prevnext">
+          <button type="button" class="btn btn-primary"  onclick="psongs()">Previous Page</button>
+          <button type="button" class="btn btn-primary"  onclick="nsongs()">Next Page</button>
+        </div>
+      </div>
 
 
     <div class="d-flex align-items-center justify-content-center d-none" style="height: 30vh;" id="publicplay">
@@ -79,7 +85,7 @@
     <div class="container">
       <div id="fav-container" class="row justify-content-center g-4 p-2">
         <div id="fav-card" class="col-6 col-lg-6 col-xl-3 d-none text-center">
-          <div class="card h-100 mx-auto" style="width: 18rem;">
+          <div class="card cardDisplay h-100 mx-auto" style="width: 18rem;">
             <div class="card-body d-flex flex-column">
             <h5 class="favcard-title text-primary"><strong></strong></h5>
             <p class="favcard-text text-wh"></p>

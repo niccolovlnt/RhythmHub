@@ -15,14 +15,50 @@
   -o-background-size: cover;
   font-family: 'Helvetica Neue';">
 
-  <div>
-    <div id="menu"></div>
-    <div class="row" style="margin-top: 60px;">
-        <div class="col d-flex justify-content-center mt-3">
-            <h1 id="username" style="color: rgb(77,98,188);"><strong><span id="username"></span> </strong></h1>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <div class="col-lg-4 col-md-6 col-sm-12 justify-content-center mt-3 ">
+  <style>
+        .dropdown-menu {
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+    .checkbox-menu li label {
+    display: block;
+    padding: 3px 10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    margin:0;
+    transition: background-color .4s ease;
+}
+.checkbox-menu li input {
+    margin: 0px 5px;
+    top: 2px;
+    position: relative;
+}
+
+.checkbox-menu li.active label {
+    background-color: #cbcbff;
+    font-weight:bold;
+}
+
+.checkbox-menu li label:hover,
+.checkbox-menu li label:focus {
+    background-color: #f5f5f5;
+}
+
+.checkbox-menu li.active label:hover,
+.checkbox-menu li.active label:focus {
+    background-color: #b8b8ff;
+}
+  </style>
+  
+    <div id="menu"></div>   
+    <div class="container">
+    <div class="row p-3" style="margin-top: 60px;">
+            <div class="col-sm-12 col-md-6 col-lg-6 mt-3 mx-auto">
+                <h1 id="username" style="color: rgb(77,98,188);"><strong><span id="username"></span> </strong></h1>
                 <div class="card">
                     <h5 class="card-header"> <strong>Update your data</strong></h5>
                     <ul class="list-group list-group-flush">
@@ -59,10 +95,26 @@
                             <div id="changeps" class="mt-2 mb-2"></div>
                         </li>
                         <li class="list-group-item">
-                            <h5 class="card-title">Favourite Genres</h5>
-                            <div class="input-group mb-2">
-                                <select id="gen" class="form-select" multiple>
-                                </select>
+                            <h5 class="card-title">Favorite Genres</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                  Select Genres
+                                </button>
+                                <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenuButton" id="genreDropdown">
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <h5 class="card-title">Favorite Artists</h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button" onkeyup="showArtist(this.value)" placeholder="Artists">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" fill="none" width="20px" height="20px">
+                                    <path d="M51.414 49.142l-14.85-14.85a20.564 20.564 0 004.95-13.292C41.514 9.617 32.397.5 21.257.5S1 9.617 1 20.757s9.117 20.257 20.257 20.257a20.564 20.564 0 0013.292-4.95l14.85 14.85a2.998 2.998 0 004.242 0 2.998 2.998 0 000-4.242zM3 20.757C3 11.163 11.163 3 20.757 3S38.514 11.163 38.514 20.757 30.351 38.514 20.757 38.514 3 30.351 3 20.757z" fill="#ffffff"/>
+                                  </svg>
+                                </button>
+                                  <ul class="dropdown-menu dropdown-menu-end allow-focus checkbox-menu" aria-labelledby="dropdownMenuButton2" id="artistDropdown">
+                                </ul>
                             </div>
                         </li>
                       </ul>
@@ -74,46 +126,89 @@
                       </div>
                 </div>
             </div>
-
-
-        </div>
     </div>
-  </div>
-<!-- Font Awesome -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-rel="stylesheet"
-/>
-<!-- Google Fonts -->
-<link
-href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-rel="stylesheet"
-/>
-    <!-- MDB -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.css"
-rel="stylesheet"
-/>
-<!-- MDB -->
-  <script
-  type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.1/mdb.min.js"
-  ></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="menu.js"></script>
 <script src="account.js"></script>
 
 <script>
+    $(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+        $(this).closest("li").toggleClass("active", this.checked);
+    });
+
+    $(document).on('click', '.allow-focus', function (e) {
+        e.stopPropagation();
+    });
+
     if(localStorage.getItem('user')!=null){
-        var user=JSON.parse(localStorage.getItem('user'))
-        document.getElementById('username').innerHTML= "@"+user.username
-        document.getElementById("name").value=user.name
-        document.getElementById('surname').value=user.surname
-        document.getElementById('email').value=user.mail
-        document.getElementById('us').value=user.username
+    var user=JSON.parse(localStorage.getItem('user'))
+    document.getElementById('username').innerHTML= "@"+user.username
+    document.getElementById("name").value=user.name
+    document.getElementById('surname').value=user.surname
+    document.getElementById('email').value=user.mail
+    document.getElementById('us').value=user.username
+    fetch('/api/genres')
+    .then(response => {
+        return response.json()
+    })
+    .then(data => {
+        var dropdownMenu = document.querySelector(".dropdown-menu.allow-focus");
+        for (i = 0; i < data.genres.length; i++) {
+            var li = document.createElement("li");
+            var label = document.createElement("label");
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = data.genres[i];
+            // Check the checkbox if the user's genres include this genre
+            if (user.genres.includes(data.genres[i])) {
+                checkbox.checked = true;
+            }
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(data.genres[i]));
+            li.appendChild(label);
+            dropdownMenu.appendChild(li);
+        }
+    })
     }
 
-    
+    function showArtist(query){
+    localStorage.removeItem("query")
+    localStorage.setItem("query", query)
+    if(query.length < 1){
+      return
+    }
+    fetch(`/spoty/artists?query=${query}`)
+    .then(response => {
+      return response.json()
+    })
+    .then(data =>{
+      // Get the dropdown menu
+      var dropdownMenu = document.querySelector('#artistDropdown');
+
+      // Clear the dropdown menu
+      dropdownMenu.innerHTML = '';
+
+      // Add each artist to the dropdown menu
+      data.artists.items.forEach(artist => {
+        var li = document.createElement('li');
+        var label = document.createElement('label');
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = artist.name;
+        if (user.artists.includes(artist.name)) {
+            input.checked = true;
+        }
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(' ' + artist.name));
+        li.appendChild(label);
+        dropdownMenu.appendChild(li);
+      });
+    })
+    }
+
     document.addEventListener('DOMContentLoaded', function(){
         var checkbox=document.getElementById('password')
         checkbox.addEventListener('change', function(){
@@ -152,10 +247,15 @@ rel="stylesheet"
                 var mail=document.getElementById('email')
                 var pass=document.getElementById('pass1')
                 var gen=document.getElementById('gen')
-                var generi_selezionati = document.querySelectorAll("#gen :checked");
+                var generi_selezionati = document.querySelectorAll("#genreDropdown :checked");
                 var generi_selezionati_values = []
                 for (let i = 0; i < generi_selezionati.length; i++) {
                     generi_selezionati_values.push(generi_selezionati[i].value)
+                }
+                var artisti_selezionati = document.querySelectorAll("#artistDropdown :checked");
+                var artisti_selezionati_values = []
+                for (let i = 0; i < artisti_selezionati.length; i++) {
+                    artisti_selezionati_values.push(artisti_selezionati[i].value)
                 }
                 var data={
                     name: name.value,
@@ -163,11 +263,12 @@ rel="stylesheet"
                     username: username.value,
                     mail: mail.value,
                     pass: pass.value,
-                    genres: generi_selezionati_values
+                    genres: generi_selezionati_values,
+                    artists: artisti_selezionati_values
                 }
                 var us=JSON.parse(localStorage.getItem('user'))
                 var id=us._id
-                fetch(`http://127.0.0.1:3000/update/${id}`, {
+                fetch(`/update/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -191,21 +292,27 @@ rel="stylesheet"
                 var username=document.getElementById('us')
                 var mail=document.getElementById('email')
                 var gen=document.getElementById('gen')
-                var generi_selezionati = document.querySelectorAll("#gen :checked");
+                var generi_selezionati = document.querySelectorAll("#genreDropdown :checked");
                 var generi_selezionati_values = []
                 for (let i = 0; i < generi_selezionati.length; i++) {
                     generi_selezionati_values.push(generi_selezionati[i].value)
+                }
+                var artisti_selezionati = document.querySelectorAll("#artistDropdown :checked");
+                var artisti_selezionati_values = []
+                for (let i = 0; i < artisti_selezionati.length; i++) {
+                    artisti_selezionati_values.push(artisti_selezionati[i].value)
                 }
                 var data={
                     name: name.value,
                     surname: surname.value,
                     username: username.value,
                     mail: mail.value,
-                    genres: generi_selezionati_values
+                    genres: generi_selezionati_values,
+                    artists: artisti_selezionati_values
                 }
                 var us=JSON.parse(localStorage.getItem('user'))
                 var id=us._id
-                fetch(`http://127.0.0.1:3000/update/${id}`, {
+                fetch(`/update/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -225,26 +332,8 @@ rel="stylesheet"
                 })
             }
 }
-    //fetch per mostrare i generi da selezionare
-    fetch('/api/genres')
-  .then(response => {
-    return response.json()
-  })
-  .then(data => {
-    var generi = document.getElementById("gen")
-      for (i = 0; i < data.genres.length; i++) {
-          var opt = document.createElement("option")
-          opt.value=data.genres[i]
-          opt.innerHTML = data.genres[i]
-          if(opt!=null){
-            generi.appendChild(opt)
-          }
-      }
-  })
 
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
   </body>
 </html>

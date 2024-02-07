@@ -12,15 +12,13 @@ const auth=require('./public/auth.js').auth
 const bodyParser=require('body-parser');
 const { log } = require('console');
 const app=express()
+// const swaggerUi = require('swagger-ui-express');
+// const swaggerDocument=require('./public/swagger-output.json')
 
-//captcha
-// const Recaptcha = require('express-recaptcha').RecaptchaV3
-// var recaptcha=new Recaptcha('6LcO48YoAAAAANyTfxqXOFDJs51Uhzq9JoWFu21h','6LcO48YoAAAAAF8czKhMJTi6pYzSWnY3RaPEEA03')
 
 app.use(express.json())
 app.use(express.static("public"))
 app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded())
 app.use(cookieParser())
 app.use(cors())
 
@@ -36,6 +34,13 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
   });
+
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))  //aggiungere rotta ad express 
+
+app.listen(3001, "0.0.0.0", ()=>{
+    console.log("Server Initialized")
+})
+
 
 // spotify token refresh
   fetch((url), {
@@ -100,6 +105,10 @@ async function addUser(res, user) {
     }
     if(user.genres == undefined){
         res.status(401).send("Genres not chosen")
+        return
+    }
+    if(user.artists == undefined){
+        res.status(401).send("Artists not chosen")
         return
     }
     user.pass = hash(user.pass)
@@ -174,9 +183,6 @@ app.get('/playlist', auth, function (req, res) {
 //     console.log("Server Initialized")
 // })
 
-app.listen(3000, "0.0.0.0", ()=>{
-    console.log("Server Initialized")
-})
 
 app.delete("/users/:id", auth, function(req, res){
     deleteUser(res, req.params.id)
@@ -223,6 +229,14 @@ async function updateUser(res, id, updatedUser){
     if (updatedUser.pass !== undefined) {
         updatedUser.pass = hash(updatedUser.pass)
     }
+    if(updatedUser.genres == undefined){
+        res.status(400).send("Genres not chosen")
+        return
+    }
+    if(updatedUser.artists == undefined){
+        res.status(400).send("Artists not chosen")
+        return
+    }
     
     try{
         var client = await new mongoClient(mongo).connect()
@@ -245,24 +259,24 @@ async function updateUser(res, id, updatedUser){
 
 //implementation of frontend requests
 
-// app.get('/spoty/artists', function(req, res){
-//     var query=req.query.query
-//     fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=50`, {
-//         headers: {
-//             "Content-Type": "application/json",
-//             Authorization: "Bearer " + spotytoken,
-//         },
-//     })
-//     .then(response => {
-//         return response.json()
-//     })
-//     .then(data =>{
-//         res.json(data)
-//     })
-//     .catch(e =>{
-//         console.error("Error: ", e)
-//     })
-// })
+app.get('/spoty/artists', function(req, res){
+    var query=req.query.query
+    fetch(`https://api.spotify.com/v1/search?q=${query}&type=artist&limit=50`, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + spotytoken,
+        },
+    })
+    .then(response => {
+        return response.json()
+    })
+    .then(data =>{
+        res.json(data)
+    })
+    .catch(e =>{
+        console.error("Error: ", e)
+    })
+})
 
 app.get("/spoty/tops", auth,function(req, res){
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50`, {

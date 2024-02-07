@@ -29,6 +29,44 @@
       background-color: #dbf3fa!important;
       backdrop-filter: saturate(200%) blur(25px);
     }
+
+    .dropdown-menu {
+    max-height: 200px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+    .checkbox-menu li label {
+    display: block;
+    padding: 3px 10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    margin:0;
+    transition: background-color .4s ease;
+}
+.checkbox-menu li input {
+    margin: 0px 5px;
+    top: 2px;
+    position: relative;
+}
+
+.checkbox-menu li.active label {
+    background-color: #cbcbff;
+    font-weight:bold;
+}
+
+.checkbox-menu li label:hover,
+.checkbox-menu li label:focus {
+    background-color: #f5f5f5;
+}
+
+.checkbox-menu li.active label:hover,
+.checkbox-menu li.active label:focus {
+    background-color: #b8b8ff;
+}
+
   </style>
 
   <div id="menu"></div>
@@ -105,34 +143,36 @@
                 <!-- select genres -->
                 <div class="row">
                   <div class="col-md-6 text-center">
-                    <p class="text-center opacity-70"><small>Choose your favourite genres:</small></p>
-                    <div class="input-group">
-                      <select id="gen" class="form-select" multiple="multiple" size="3">
-                      </select>
+                    <p class="text-center opacity-70"><small>Choose genres</small></p>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Select Genres
+                      </button>
+                      <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenuButton" id="genreDropdown">
+                      </ul>
                     </div>
                   </div>
                 
                   <div class="col-md-6 text-center">
-                    <p class="text-center opacity-70"><small>Choose your favourite artists:</small></p>
+                    <p class="text-center opacity-70"><small>Choose artists:</small></p>
                     <div class="input-group">
-                      <select id="art" class="form-select" multiple="multiple" size="3">
-                      </select>
+                      <input type="text" class="form-control" aria-label="Text input with dropdown button" onkeyup="showArtist(this.value)" placeholder="Artists">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" fill="none" width="20px" height="20px">
+                          <path d="M51.414 49.142l-14.85-14.85a20.564 20.564 0 004.95-13.292C41.514 9.617 32.397.5 21.257.5S1 9.617 1 20.757s9.117 20.257 20.257 20.257a20.564 20.564 0 0013.292-4.95l14.85 14.85a2.998 2.998 0 004.242 0 2.998 2.998 0 000-4.242zM3 20.757C3 11.163 11.163 3 20.757 3S38.514 11.163 38.514 20.757 30.351 38.514 20.757 38.514 3 30.351 3 20.757z" fill="#ffffff"/>
+                        </svg>
+                      </button>
+                        <ul class="dropdown-menu dropdown-menu-end allow-focus checkbox-menu" aria-labelledby="dropdownMenuButton2" id="artistDropdown">
+                      </ul>
                     </div>
                   </div>
-                </div>
-
-
               </div>
+
             </form>
             <div id="error-message" style="color: red; text-align: center;" class="mb-2"></div>
             <!-- Submit button -->
             <div class="col text-center g-2 ">
-              
-              <!-- <button class="g-recaptcha" data-sitekey="6LcO48YoAAAAANyTfxqXOFDJs51Uhzq9JoWFu21h" 
-              data-callback='onSubmit' data-action='submit' id="demo-form"> Submit
-              </button> -->
-
-              <button type="submit" class="btn btn-primary mb-4" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
+              <button type="submit" class="btn btn-primary mb-4 mt-3" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
                 Sign Up
               </button>
               <div class="text-center link-dark">
@@ -146,35 +186,72 @@
   </div>
 </section>
 
-<!-- <script src="https://www.google.com/recaptcha/api.js?render=6LcO48YoAAAAANyTfxqXOFDJs51Uhzq9JoWFu21h"></script> -->
-
-<!-- <script>
-  function onSubmit(token) {
-    document.getElementById("demo-form").submit();
-  }
-</script> -->
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 
 
 <script src="menu.js"></script>
 <script>
-  fetch('/api/genres')
+
+$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+   $(this).closest("li").toggleClass("active", this.checked);
+});
+
+$(document).on('click', '.allow-focus', function (e) {
+  e.stopPropagation();
+});
+
+fetch('/api/genres')
   .then(response => {
     return response.json()
   })
   .then(data => {
-    var generi = document.getElementById("gen")
-      for (i = 0; i < data.genres.length; i++) {
-          var opt = document.createElement("option")
-          opt.value=data.genres[i]
-          opt.innerHTML = data.genres[i]
-          if(opt!=null){
-            generi.appendChild(opt)
-          }
-      }
+    var dropdownMenu = document.querySelector(".dropdown-menu.allow-focus");
+    for (i = 0; i < data.genres.length; i++) {
+      var li = document.createElement("li");
+      var label = document.createElement("label");
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = data.genres[i];
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(data.genres[i]));
+      li.appendChild(label);
+      dropdownMenu.appendChild(li);
+    }
   })
+
+  function showArtist(query){
+    localStorage.removeItem("query")
+    localStorage.setItem("query", query)
+    if(query.length < 1){
+      return
+    }
+    fetch(`/spoty/artists?query=${query}`)
+    .then(response => {
+      return response.json()
+    })
+    .then(data =>{
+      // Get the dropdown menu
+      var dropdownMenu = document.querySelector('#artistDropdown');
+
+      // Clear the dropdown menu
+      dropdownMenu.innerHTML = '';
+
+      // Add each artist to the dropdown menu
+      data.artists.items.forEach(artist => {
+        var li = document.createElement('li');
+        var label = document.createElement('label');
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = artist.name;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(' ' + artist.name));
+        li.appendChild(label);
+        dropdownMenu.appendChild(li);
+      });
+    })
+    }
 
   function signup(){
     var name=document.getElementById('name')
@@ -185,10 +262,16 @@
     var gen=document.getElementById('gen')
     var errorMessage = document.getElementById('error-message');
 
-    var generi_selezionati = document.querySelectorAll("#gen :checked");
+    var generi_selezionati = document.querySelectorAll("#genreDropdown :checked");
     var generi_selezionati_values = []
     for (let i = 0; i < generi_selezionati.length; i++) {
       generi_selezionati_values.push(generi_selezionati[i].value)
+    }
+
+    var artisti_selezionati = document.querySelectorAll("#artistDropdown :checked");
+    var artisti_selezionati_values = []
+    for (let i = 0; i < artisti_selezionati.length; i++) {
+      artisti_selezionati_values.push(artisti_selezionati[i].value)
     }
 
     var data={
@@ -197,7 +280,8 @@
       username: username.value,
       mail: mail.value,
       pass: pass.value,
-      genres: generi_selezionati_values
+      genres: generi_selezionati_values,
+      artists: artisti_selezionati_values
     }
     fetch("/users", {
       method: "POST",

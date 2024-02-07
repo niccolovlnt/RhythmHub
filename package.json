@@ -1,22 +1,20 @@
 {
   "scripts": {
-    "start": "nodemon paths.js"
+    "start": "nodemon paths.js",
+    "swagger-autogen": "node ./public/swagger.js"
   },
   "dependencies": {
     "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "express-recaptcha": "^5.1.0",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
-    "jwt-redis": "^7.0.3",
     "mongodb": "^5.4.0",
     "nodemon": "^2.0.22",
     "swagger-ui-express": "^4.6.2"
   },
   "devDependencies": {
-    "multer": "^1.4.5-lts.1",
     "swagger-autogen": "^2.23.1"
   },
   "name": "mdb-standard-app",
