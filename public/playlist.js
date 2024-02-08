@@ -79,9 +79,18 @@ if(localStorage.getItem('user')!=null){
                                                 songCard.getElementsByClassName('song-title')[0].innerHTML = songData.name;
                                                 songCard.getElementsByClassName('song-artist')[0].innerHTML = songData.artists[0].name;
                                                 songCard.getElementsByClassName('song-im')[0].src = songData.album.images[0].url;
-                                                songCard.getElementsByClassName('rmsong')[0].setAttribute('data-song-id', data[i].song_ids[k]);
+                                                
+                                                (function(i, modal) {
+                                                    var deleteButton = songCard.getElementsByClassName('rmsong')[0];
+                                                    deleteButton.setAttribute('data-song-id', data[i].song_ids[k]);
+                                                    deleteButton.addEventListener('click', function(event) {
+                                                        var songId = event.target.getAttribute('data-song-id');
+                                                        deleteSg(songId);
+                                                    });
+                                                })(i, modal);
+                                                
+                                                
                                                 songCard.classList.remove('d-none');
-                            
                                                 modalBody.appendChild(songCard);
                                             })
                                             .catch(error => {
@@ -157,8 +166,6 @@ var noplaylist=`
                         <label for="floatingSelect">Visibility</label>
                         </div>
 
-
-
                         </div>
                         <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -218,9 +225,6 @@ var okplaylist=`
                 </select>
                 <label for="floatingSelect">Visibility</label>
                 </div>
-
-
-
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -271,7 +275,7 @@ var okplaylist=`
 
                             <div class="card-footer">
                                 <div class="d-flex justify-content-end">
-                                    <button class="btn btn-primary p-2 rmsong" onclick="deleteSg(this.dataset.songId)" data-song-id="">Remove song</button>
+                                    <button class="btn btn-primary p-2 rmsong" data-song-id="">Remove song</button>
                                 </div>
                             </div>                        
                         </div>
@@ -383,6 +387,7 @@ function deleteSg(songid){
     })
 }
 
+//display username from user id
 async function getUser(id){
     return fetch("/users")
     .then(response => {

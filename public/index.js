@@ -85,9 +85,6 @@ function addSong(id){
 
 // function to  show playlist on homepage
 async function showPls(charts){
-    // var pg=parseInt(localStorage.getItem("page"), 10) || 0
-    // document.getElementById('playname').innerHTML=charts.name
-    // document.getElementById('playfoll').innerHTML=("Followers: " +((charts.followers.total/1000000).toString().slice(0,5) +"M"))
     var card=document.getElementById("fav-card")
     var container = document.getElementById("fav-container")
     container.innerHTML = ""
@@ -110,6 +107,7 @@ async function showPls(charts){
         }
         clone.getElementsByClassName('fav1')[0].href=charts[i]._id
         clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.querySelector('a').href = "user.html?id_user=" + charts[i].user_id;
         clone.classList.remove('d-none')
         card.before(clone)
     }
@@ -183,11 +181,6 @@ async function getUser(id){
 }
 
 async function showSearchPlay(charts){
-    if(charts.length > 3){
-    var pg=parseInt(localStorage.getItem("page"), 10) || 0
-    var picker=document.getElementById("picker")
-    picker.classList.remove('d-none')
-    }
     var card=document.getElementById("playlist-card")
     var container = document.getElementById("playlist-container")
     container.innerHTML = ""
@@ -210,15 +203,13 @@ async function showSearchPlay(charts){
         }
         //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
         clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.querySelector('a').href = "user.html?id_user=" + charts[i].user_id;
         clone.classList.remove('d-none')
         card.before(clone)
     }
 }
 
 async function showSearchTags(charts){
-    var pg=parseInt(localStorage.getItem("page"), 10) || 0
-    var picker=document.getElementById("picker")
-    picker.classList.remove('d-none')
     var card=document.getElementById("playlist-card")
     var container = document.getElementById("playlist-container")
     container.innerHTML = ""
@@ -242,7 +233,140 @@ async function showSearchTags(charts){
         //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
         // clone.getElementsByClassName('fav2')[0].href=charts.tracks.items[i].track.id
         clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.querySelector('a').href = "user.html?id_user=" + charts[i].user_id;
         clone.classList.remove('d-none')
         card.before(clone)
+    }
+}
+
+async function showUserPlay(data){
+    if(data.length>1){
+        var code=`
+        <div class="container" id="pl-cont">
+        <div class="card mt-3" id="pl-card">
+            <div class="card-body">
+            <h5 class="card-title"> <span id="plname" class="plname"></span> <span id="htag" class="htag d-none" style="font-size: smaller; opacity: 0.5;"> by @<span id="username" class="username"></span></span></h5>
+            <p class="card-text imported" style="opacity: 50%;"></p>
+            <p class="card-text pldesc" id="pldesc"></p>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show Songs</button>
+
+              <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="plnamemodal"></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <p id="pldescmodal"></p>
+                        <p id="pltagsmodal"></p>
+                        <p id="plvismodal"></p>
+ 
+                        <div class="card d-none" id="song-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <img class="song-im" src="" alt="Image" style="max-width: 50%; height: auto; border-radius: 50%;">
+                                    </div>
+                                    <div class="col-sm-6 text-center">
+                                        <h3 class="song-title"></h3>
+                                        <p class="song-artist"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        `
+        document.getElementById('play').innerHTML=code
+        var card=document.getElementById('pl-card')
+        var container=document.getElementById('pl-cont')
+        container.innerHTML = "" // Clear the container
+        container.append(card)
+        for(let i=0;i<data.length;i++){
+            if(data[i].name != ''){
+                var clone=card.cloneNode(true)
+                clone.id = 'pl-card-' + i
+            }
+            clone.getElementsByClassName('plname')[0].innerHTML = data[i].name
+            clone.getElementsByClassName('pldesc')[0].innerHTML = data[i].description
+            clone.getElementsByClassName('username')[0].innerHTML = await getUser(data[i].user_id)
+            clone.getElementsByClassName('htag')[0].classList.remove('d-none')
+            if(data[i].imported_from){
+                clone.getElementsByClassName('imported')[0].innerHTML = "imported from: " + await getUser(data[i].imported_from)
+                clone.getElementsByClassName('imported')[0].classList.remove('d-none')
+            }
+            //clone.getElementsByClassName('songid')[0].href = data[i]._id
+            //clone.getElementsByClassName('pl-id')[0].href = data[i]._id
+            clone.classList.remove('d-none')
+            card.before(clone)
+
+            var modalTemplate = document.getElementById('staticBackdrop');
+            var modal = modalTemplate.cloneNode(true);
+            modal.id = 'modal-' + i;
+
+            var plname = modal.querySelector('#plnamemodal');
+            var pldesc = modal.querySelector('#pldescmodal');
+            var pltags = modal.querySelector('#pltagsmodal');
+            var plvis = modal.querySelector('#plvismodal');
+
+            plname.innerHTML = data[i].name;
+            pldesc.innerHTML = "Description: " + data[i].description;
+            pltags.innerHTML = "Tags: " + data[i].tags.join(', ');
+            plvis.innerHTML = data[i].visibility == 1 ? "Public" : "Private";
+
+            var showSongsButton = clone.querySelector('[data-bs-toggle="modal"]');
+            showSongsButton.setAttribute('data-bs-target', '#modal-' + i);
+            document.body.appendChild(modal);
+            // var myModal = new bootstrap.Modal(document.getElementById('modal-' + i));
+            
+            (function(i, modal) {
+                for (let k = 0; k < data[i].song_ids.length; k++) {
+                    fetch(`/spoty/song/${data[i].song_ids[k]}`)
+                        .then(songResponse => {
+                            if(songResponse.status === 200){
+                                return songResponse.json();
+                            } else {
+                                throw new Error('Error status: ' + songResponse.status);
+                            }
+                        })
+                        .then(songData => {
+                            // Append the songs to the correct modal
+                            var songCardTemplate = modal.querySelector('#song-card');
+                            var modalBody = modal.querySelector('.modal-body');
+        
+                            var songCard = songCardTemplate.cloneNode(true);
+                            songCard.id = 'playlist-card-' + i;
+                            songCard.getElementsByClassName('song-title')[0].innerHTML = songData.name;
+                            songCard.getElementsByClassName('song-artist')[0].innerHTML = songData.artists[0].name;
+                            songCard.getElementsByClassName('song-im')[0].src = songData.album.images[0].url;
+                            
+                            songCard.classList.remove('d-none');
+                            modalBody.appendChild(songCard);
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        });
+                }
+            })(i, modal);
+        }
+        card.remove();
+        card.remove();
+        card.remove();
+    }else{
+        document.getElementById('play').innerHTML=`
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">No playlists created by the user.</h5>
+            </div>
+        </div>`
     }
 }

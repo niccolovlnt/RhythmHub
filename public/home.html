@@ -35,12 +35,6 @@
             <small id="playfoll" class="text-body-secondary"></small>
           </h3>
         </div>
-        <!-- <div class="col-auto">
-          <div class="btn-group d-none" role="group" id="prevnext">
-            <button type="button" class="btn btn-primary"  onclick="psongs()">Previous</button>
-            <button type="button" class="btn btn-primary"  onclick="nsongs()">Next</button>
-          </div>
-        </div> -->
       </div>
     </div>
 
@@ -75,7 +69,6 @@
         </div>
       </div>
 
-
     <div class="d-flex align-items-center justify-content-center d-none" style="height: 30vh;" id="publicplay">
       <div style="background-color: rgba(114, 105, 211, 0.5); border-radius: 15px; padding: 20px;">
           <h1 class="display-1 text-white">Public Playlists</h1>
@@ -88,13 +81,14 @@
           <div class="card cardDisplay h-100 mx-auto" style="width: 18rem;">
             <div class="card-body d-flex flex-column">
             <h5 class="favcard-title text-primary"><strong></strong></h5>
-            <p class="favcard-text text-wh"></p>
+            <a href="user.html?user_id=" + id>
+              <p class="favcard-text text-wh"></p>
+            </a>
             <p class="favtags card-text text-body-secondary"></p>
             <div class="card-footer mt-auto">
               <div class="d-grid gap-2">
                 <a href="#" type="button" class="fav1 btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showPlHm(this.getAttribute('href')); return false;">Show More</a>
                 <a href="#" class="fav2 btn btn-primary btn-block g-2" onclick="duplicatePlay(this.getAttribute('href')); return false;">Import Playlist</a>
-
 
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -118,23 +112,16 @@
                                   <div class="col-sm-6 text-center">
                                       <h3 class="song-title"></h3>
                                       <p class="song-artist"></p>
-
                                   </div>
                               </div>
                           </div>                      
                         </div>                                                                    
                       </div>
-
-
-
                       <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                       </div>
                   </div>
               </div>
-
-
-
               </div>
             </div>
             </div>
@@ -242,22 +229,17 @@ rel="stylesheet"
         .catch(e => {
           console.error("Error:", e)
         })  
+        }
       }
-      }
-
-      
-      
       
       function addSong(id){
         localStorage.setItem("song_id", id)
-        
         fetch('/playlist')
-          .then(response => {
-            // Redirect to playlist.html
-            window.location.href = response.url
-          })
+        .then(response => {
+          // Redirect to playlist.html
+          window.location.href = response.url
+        })
       }
-
     </script>
   </body>
 </html>

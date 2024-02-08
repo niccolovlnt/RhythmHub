@@ -35,8 +35,10 @@ if(localStorage.getItem('user')!=null){
     <nav class="navbar bg-primary fixed-top">
     <div class="container-fluid">
     <div class="navbar-brand d-flex align-items-center">
+    <a href="home.html">
     <img src="iconPNG.png" alt="Logo" width="35" height="35">
     <span style="color: white; margin-left: 5px;">RhythmHub</span>
+    </a>
     </div>  
 
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation" style="border: none; border-radius: 0;">

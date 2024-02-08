@@ -12,8 +12,8 @@ const auth=require('./public/auth.js').auth
 const bodyParser=require('body-parser');
 const { log } = require('console');
 const app=express()
-// const swaggerUi = require('swagger-ui-express');
-// const swaggerDocument=require('./public/swagger-output.json')
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument=require('./swagger-output.json')
 
 
 app.use(express.json())
@@ -33,14 +33,13 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+})
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))  //aggiungere rotta ad express 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.listen(3001, "0.0.0.0", ()=>{
     console.log("Server Initialized")
 })
-
 
 // spotify token refresh
   fetch((url), {
@@ -83,32 +82,32 @@ app.get('/users', auth, async function(req, res){
 })
 
 async function addUser(res, user) {
-    if(user.name==undefined){
-        res.status(401).send("Missing name")
+    if(user.name== ""){
+        res.status(401).send("Missing Name")
         return
     }
-    if(user.surname==undefined){
-        res.status(401).send("Missing surname")
+    if(user.surname== ""){
+        res.status(401).send("Missing Surname")
         return
     }
-    if (user.username == undefined) {
-        res.status(401).send("Missing username")
+    if (user.username ==  "" || user.username.length < 4) {
+        res.status(401).send("Missing Username or too short")
         return
     }
-    if (user.mail == undefined) {
-        res.status(401).send("Missing Email")
+    if (user.mail == "" || user.mail.indexOf('@') == -1 || user.mail.indexOf('.') == -1){
+        res.status(401).send("Invalid Email")
         return
     }
-    if (user.pass == undefined || user.pass.length < 8) {
-        res.status(401).send("Password is missing or too short")
+    if (user.pass == "" || user.pass.length < 8 || user.pass.indexOf(' ') != -1){
+        res.status(401).send("Password is missing, too short or contains spaces")
         return
     }
-    if(user.genres == undefined){
-        res.status(401).send("Genres not chosen")
+    if(user.genres.length == 0){
+        res.status(401).send("Genres not Chosen")
         return
     }
-    if(user.artists == undefined){
-        res.status(401).send("Artists not chosen")
+    if(user.artists.length == 0){
+        res.status(401).send("Artists not Chosen")
         return
     }
     user.pass = hash(user.pass)
@@ -158,10 +157,18 @@ app.post("/users", function (req, res) {
     addUser(res, req.body)
 })
 
+app.get('/user/:id', auth, async function(req, res){
+    var id=req.params.id
+    var pwmClient = await new mongoClient(mongo).connect()
+    var user = await pwmClient.db("RhythmHub")
+        .collection('Users')
+        .findOne({ _id: new ObjectId(id) })
+    res.json(user)
+})
+
 app.get('/', auth, function (req, res) {
     res.sendFile(path.join(__dirname, 'public/home.html'));
 })
-
 
 app.get('/login', function (req, res) {   
     res.sendFile(path.join(__dirname, 'public/login.html'));
@@ -178,11 +185,6 @@ app.get('/signup', function (req, res) {
 app.get('/playlist', auth, function (req, res) {
     res.sendFile(path.join(__dirname, 'public/playlist.html'));
 })
-
-// app.listen(3001, "192.168.1.133", ()=>{
-//     console.log("Server Initialized")
-// })
-
 
 app.delete("/users/:id", auth, function(req, res){
     deleteUser(res, req.params.id)
@@ -278,7 +280,7 @@ app.get('/spoty/artists', function(req, res){
     })
 })
 
-app.get("/spoty/tops", auth,function(req, res){
+app.get("/spoty/tops",function(req, res){
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF?market=IT&limit=50`, {
         headers: {
             "Content-Type": "application/json",
@@ -334,9 +336,7 @@ app.get("/spoty/search", function(req, res){
     })
 })
 
-
-
-app.get("/spoty/song", auth, function(req, res){
+app.get("/spoty/song", function(req, res){
     var ident=req.query.id
     fetch(`https://api.spotify.com/v1/tracks/${ident}`,{
         headers: {
@@ -441,6 +441,7 @@ async function removeFavorites(res, id, song_id){
         var item = await pwmClient.db("RhythmHub")
             .collection('Favourites')
             .updateOne(filter, update)
+        console.log(item)
         res.send(item)
     } catch (e) {
         res.status(500).send(`Errore generico: ${e}`)
@@ -566,8 +567,8 @@ app.delete('/favorites/remove/:id', auth, async (req, res) => {
 app.delete('/favorites/:id', auth, async (req, res) => {
    var id = req.params.id
    song_id = req.body.song_id
-//    console.log(song_id)
-//    console.log(id)
+   console.log(id)
+   console.log(song_id)
    removeFavorites(res,id,song_id)
 })
 
@@ -625,5 +626,3 @@ app.post('/favorites/import/:id', async (req,res) => {
         res.status(500).send(`Errore generico: ${e}`)
     }
 })
-
-

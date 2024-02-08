@@ -252,11 +252,14 @@
                 for (let i = 0; i < generi_selezionati.length; i++) {
                     generi_selezionati_values.push(generi_selezionati[i].value)
                 }
+                var user = JSON.parse(localStorage.getItem('user'));
+                var savedArtists = user.artists || [];
                 var artisti_selezionati = document.querySelectorAll("#artistDropdown :checked");
                 var artisti_selezionati_values = []
                 for (let i = 0; i < artisti_selezionati.length; i++) {
                     artisti_selezionati_values.push(artisti_selezionati[i].value)
                 }
+                var allArtists = [...new Set([...savedArtists, ...artisti_selezionati_values])];
                 var data={
                     name: name.value,
                     surname: surname.value,
@@ -264,7 +267,7 @@
                     mail: mail.value,
                     pass: pass.value,
                     genres: generi_selezionati_values,
-                    artists: artisti_selezionati_values
+                    artists: allArtists
                 }
                 var us=JSON.parse(localStorage.getItem('user'))
                 var id=us._id
@@ -297,19 +300,29 @@
                 for (let i = 0; i < generi_selezionati.length; i++) {
                     generi_selezionati_values.push(generi_selezionati[i].value)
                 }
+                var user = JSON.parse(localStorage.getItem('user'));
+                var savedArtists = user.artists || [];
+
                 var artisti_selezionati = document.querySelectorAll("#artistDropdown :checked");
                 var artisti_selezionati_values = []
                 for (let i = 0; i < artisti_selezionati.length; i++) {
                     artisti_selezionati_values.push(artisti_selezionati[i].value)
                 }
-                var data={
+
+                // Filter out the de-selected artists from the saved artists
+                savedArtists = savedArtists.filter(artist => artisti_selezionati_values.includes(artist));
+
+                var allArtists = [...new Set([...savedArtists, ...artisti_selezionati_values])];
+
+                var data = {
                     name: name.value,
                     surname: surname.value,
                     username: username.value,
                     mail: mail.value,
                     genres: generi_selezionati_values,
-                    artists: artisti_selezionati_values
+                    artists: allArtists
                 }
+                
                 var us=JSON.parse(localStorage.getItem('user'))
                 var id=us._id
                 fetch(`/update/${id}`, {
@@ -331,7 +344,7 @@
                     console.error("Error: ", error)
                 })
             }
-}
+        }
 
 </script>
 
