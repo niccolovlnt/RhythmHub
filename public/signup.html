@@ -91,50 +91,58 @@
           <div class="card-body px-4 py-5 px-md-5">
             <h2 class="text-center text-primary">Welcome!🎵</h2>
             <p class="text-center opacity-70"><small>Insert your credentials and choose your preferences.</small></p>
-            <form class="form-floating">
-
-
+            
+            
+            
+            <form class="form-floating needs-validation" novalidate>
               <!-- Nome -->
+            
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-floating mb-4">
-                    <input type="text" id="name" class="form-control" placeholder="Name"/>
+                    <input type="text" id="name" class="form-control" placeholder="Name" required/>
                     <label class="form-label opacity-80" for="name">Name</label>
+                    <div class="invalid-feedback">Please provide your name.</div>
                   </div>
                 </div>
               
                 <div class="col-md-6">
                   <div class="form-floating mb-4">
-                    <input type="text" id="surname" class="form-control" placeholder="Surname"/>
+                    <input type="text" id="surname" class="form-control" placeholder="Surname" required/>
                     <label class="form-label opacity-80" for="surname">Surname</label>
+                    <div class="invalid-feedback">Please provide your surname.</div>
                   </div>
                 </div>
               </div>
               <!-- Username Input -->
                 <div class="form-floating mb-4">
-                    <input type="username" id="uuser" class="form-control" placeholder="Username"/>
+                    <input type="username" id="uuser" class="form-control" placeholder="Username" required/>
                     <label class="form-label opacity-80" for="formusername">Username</label>
+                    <div class="invalid-feedback">Please choose a username.</div>
                 </div>
 
               <!-- Email input -->
               <div class="form-floating mb-4">
-                <input type="email" id="eemail" class="form-control" placeholder="Email Address"/>
+                <input type="email" id="eemail" class="form-control" placeholder="Email Address" required/>
                 <label class="form-label opacity-80" for="form3Example3">E-mail Address</label>
+                <div class="invalid-feedback">Please provide your e-mail.</div>
               </div>
 
               <!-- Password input -->
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-floating mb-4">
-                    <input type="password" id="paas" class="form-control" placeholder="Password"/>
+                    <input type="password" id="paas" class="form-control" placeholder="Password" required/>
                     <label class="form-label opacity-80" for="paas">Password</label>
+                    <div class="invalid-feedback">Please choose a password.</div>
                   </div>
                 </div>
               
                 <div class="col-md-6">
                   <div class="form-floating mb-4">
-                    <input type="password" id="paas2" class="form-control" placeholder="Repeat Password"/>
+                    <input type="password" id="paas2" class="form-control" placeholder="Repeat Password" required/>
                     <label class="form-label opacity-80" for="paas2">Repeat password</label>
+                    <div class="invalid-feedback">Please retype your password.</div>
                   </div>
                 </div>
               </div>
@@ -168,16 +176,17 @@
                   </div>
               </div>
 
-            </form>
-            <div id="error-message" style="color: white; background-color: red; border: 2px solid red; border-radius: 10px; text-align: center;" class="mb-2 mt-2 d-none"></div>           <!-- Submit button -->
+            <!-- <div id="error-message" style="color: white; background-color: red; border: 2px solid red; border-radius: 10px; text-align: center;" class="mb-2 mt-2 d-none"></div>           Submit button -->
             <div class="col text-center g-2 ">
-              <button type="submit" class="btn btn-primary mb-4 mt-3" style="background-color: rgb(72, 112, 196); border-color: rgb(72, 112, 196);" onclick="signup()">
+              <button type="submit" class="btn btn-primary mb-4 mt-3">
                 Sign Up
               </button>
               <div class="text-center link-dark">
                 <p style="color: rgb(72, 112, 196);">Already have an account? <a href="login.html" style="color: black;" class="opacity-50"><u>Log In here.</u></a></p>
               </div>
             </div>
+          </form>
+
           </div>
         </div>
       </div>
@@ -200,6 +209,24 @@ $(".checkbox-menu").on("change", "input[type='checkbox']", function() {
 $(document).on('click', '.allow-focus', function (e) {
   e.stopPropagation();
 });
+
+(() => {
+  'use strict'
+  const forms=document.querySelectorAll('.needs-validation')
+
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if(!form.checkValidity()){
+      event.preventDefault()
+      event.stopPropagation()
+      }else{
+        event.preventDefault()
+        signup()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
 
 fetch('/api/genres')
   .then(response => {
@@ -258,9 +285,16 @@ fetch('/api/genres')
     var username=document.getElementById('uuser')
     var mail=document.getElementById('eemail')
     var pass=document.getElementById('paas')
+    var pass2=document.getElementById('paas2')
     var gen=document.getElementById('gen')
     var errorMessage = document.getElementById('error-message');
 
+    if(pass.value !== pass2.value){
+        errorMessage.classList.remove('d-none');
+        errorMessage.textContent = "Passwords do not match";
+        return;
+    }  
+    
     var generi_selezionati = document.querySelectorAll("#genreDropdown :checked");
     var generi_selezionati_values = []
     for (let i = 0; i < generi_selezionati.length; i++) {
@@ -279,10 +313,10 @@ fetch('/api/genres')
       username: username.value,
       mail: mail.value,
       pass: pass.value,
+      pass2: pass2.value,
       genres: generi_selezionati_values,
       artists: artisti_selezionati_values
     }
-    console.log(data)
     fetch("/users", {
       method: "POST",
       headers: {
@@ -290,18 +324,18 @@ fetch('/api/genres')
       },
       body: JSON.stringify(data)
     })
-    .then(response => {
-      if(response.status === 401){
-        return response.text()
-      }else{
+    .then(response =>  response.json())
+    .then( data => {
+      if(data.errorType === 'user'){
+        alert(data.message);
+        username.value = '';
+      }else if(data.errorType === 'email'){
+        alert(data.message);
+        mail.value = '';
+      }   
+      else{
         window.location.href="login.html"
-      }
-    })  
-    .then(err =>{
-      if(typeof err === 'string'){
-        errorMessage.classList.remove('d-none');
-        errorMessage.textContent = err;
-      }
+        } 
     })
     .catch(error => {
       console.error("Error: ", error)

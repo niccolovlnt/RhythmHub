@@ -94,9 +94,13 @@ async function addUser(res, user) {
         res.status(401).send("Missing Username or too short")
         return
     }
-    if (user.mail == "" || user.mail.indexOf('@') == -1 || user.mail.indexOf('.') == -1){
+    if (user.mail == "" || user.mail.indexOf('@') == -1){
         res.status(401).send("Invalid Email")
         return
+    }
+    if(user.pass !== user.pass2){
+        res.status(401).send("Passwords do not match");
+        return;
     }
     if (user.pass == "" || user.pass.length < 8 || user.pass.indexOf(' ') != -1){
         res.status(401).send("Password is missing, too short or contains spaces")
@@ -111,24 +115,36 @@ async function addUser(res, user) {
         return
     }
     user.pass = hash(user.pass)
+    user.pass2 = hash(user.pass2)
     var pwmClient = await new mongoClient(mongo).connect()
     try {
+        var existingUser = await pwmClient.db("RhythmHub")
+        .collection('Users')
+        .findOne({ "mail": user.mail });
+        if (existingUser) {
+            res.status(409).json({ errorType: 'email', message: "Email already exists" });
+            return;
+        }
+        var existingUsername = await pwmClient.db("RhythmHub")
+            .collection('Users')
+            .findOne({ "username": user.username });
+        if (existingUsername) {
+            res.status(409).json({ errorType: 'user', message: "Username already exists" });
+            return;
+        }
+        
         var items = await pwmClient.db("RhythmHub").collection('Users').insertOne(user)
         var token=jwt.sign({user}, jwtsecret, {expiresIn: '3600s'});
         res.cookie('token',token, {httpOnly: true});
         res.json(items)
     }
     catch (e) {
-        console.log('catch in test');
-        if (e.code == 11000) {
-            res.status(400).send("Utente già presente")
-            return
-        }
         res.status(500).send(`Errore generico: ${e}`)
     };
 }
 
 app.post("/login", async (req,res)=>{
+    console.log(req.body)
     var login=req.body
     if(login.pass === undefined || login.mail === undefined){
         res.status(401).send("Wrong e-mail or password.")
@@ -149,7 +165,7 @@ app.post("/login", async (req,res)=>{
     } else {
         var token=jwt.sign({loggedUser}, jwtsecret, {expiresIn: '3600s'});
         res.cookie('token',token, {httpOnly: true});
-        res.json(loggedUser).send()
+        res.json(loggedUser)
     }
 })
 
@@ -414,6 +430,20 @@ async function deletePlaylist(res, id){
 
 async function createPlaylist(res, play){
     try{
+        console.log(play)
+        if(play.plname == ""){
+            res.status(400).json({ errorType: 'name', message: "Missing playlist name" });
+            return
+        }
+        if(play.pldesc == ""){
+            res.status(400).json({ errorType: 'description', message: "Missing playlist description" });
+            return
+        }
+        if(play.pltags.length === 0 || (play.pltags.length === 1 && play.pltags[0] === "")){
+            res.status(400).json({ errorType: 'tags', message: "Missing playlist tags" });
+            return
+        }
+
         var pwmClient = await new mongoClient(mongo).connect();
         var item = await pwmClient.db("RhythmHub")
             .collection('Favourites')
@@ -464,7 +494,7 @@ app.delete('/favorites/user/:id', auth, async (req, res) => {
 })
 
 //show playlist by id on homepage
-app.get('/favorites/show/:id', async (req,res) => {
+app.get('/favorites/show/:id', auth, async (req,res) => {
     try{
     var pwmClient = await new mongoClient(mongo).connect()
     var favorites = await pwmClient.db("RhythmHub")
@@ -536,6 +566,7 @@ app.get('/favorites/searchtags', async (req,res) => {
     }
 })
 
+//get all playlists of a user
 app.get('/favorites/:id', async (req, res) => {
     var id = req.params.id
     // Check if id is a valid 24-character hexadecimal string
@@ -626,3 +657,22 @@ app.post('/favorites/import/:id', async (req,res) => {
         res.status(500).send(`Errore generico: ${e}`)
     }
 })
+
+//route to update playlist
+app.put("/favorites/update/:id", auth, async (req, res) => {
+    var id = req.params.id;
+    var updatedPlaylist = req.body;
+    try {
+        var pwmClient = await new mongoClient(mongo).connect();
+        var filter = { "_id": new ObjectId(id) };
+        var upPlaylistToInsert = {
+            $set: updatedPlaylist
+        };
+        await pwmClient.db("RhythmHub").collection("Favourites").updateOne(filter, upPlaylistToInsert);
+        var item = await pwmClient.db("RhythmHub").collection("Favourites").findOne(filter);
+        res.send(item);
+    } catch (e) {
+        console.log('catch in test');
+        res.status(500).send(`Errore: ${e}`);
+    }
+})   

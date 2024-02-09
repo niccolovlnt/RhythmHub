@@ -57,6 +57,7 @@
             return response.json()
         })
         .then(data => {
+            console.log(data)
             showUserPlay(data)
         })
         .catch(e => {

@@ -61,7 +61,8 @@
               <div class="d-grid gap-2 mt-auto">
                 <a href="#" class="fav1 btn btn-secondary btn-block g-2 d-none" id="fav1">See Song</a>
                 <a href="#" class="fav2 btn btn-secondary btn-block g-2 d-none" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="fav2" onclick="showPlHm(this.getAttribute('href')); return false;">See More</a>
-                <a href="#" class="fav3 btn btn-primary btn-block g-2" onclick="addSong(this.getAttribute('href')); return false;" id="fav3">Add to Playlist</a>
+                <a href="#" class="fav3 btn btn-primary btn-block g-2 d-none" onclick="addSong(this.getAttribute('href')); return false;" id="fav3">Add to Playlist</a>
+                <a href="#" class="fav4 btn btn-primary btn-block g-2 d-none" onclick="duplicatePlay(this.getAttribute('href')); return false;"  id="fav4">Import Playlist</a>
               </div>
               </div>
             </div> 
@@ -106,12 +107,15 @@
 <script src="menu.js"></script>
 <script src="index.js"></script>
 <script>
+  var user = JSON.parse(localStorage.getItem("user"))
   localStorage.setItem("page", 0)
   let currentReq = null
 
   function resetButtons() {
     document.getElementById("fav1").classList.add("d-none");
     document.getElementById("fav2").classList.add("d-none");
+    document.getElementById("fav3").classList.add("d-none");
+    document.getElementById("fav4").classList.add("d-none");
   }
 
   function search(query){
@@ -128,6 +132,8 @@
     .then(data =>{
       document.getElementById("fav1").classList.remove("d-none")
       document.getElementById("fav2").classList.add("d-none")
+      document.getElementById("fav3").classList.remove("d-none")
+      document.getElementById("fav4").classList.add("d-none")
       showSearch(data)
     })
     .catch(e => {
@@ -153,6 +159,8 @@ function searchPlay(query){
   .then(data =>{
     document.getElementById("fav2").classList.remove("d-none") 
     document.getElementById("fav1").classList.add("d-none")
+    document.getElementById("fav3").classList.add("d-none")
+    document.getElementById("fav4").classList.remove("d-none")
     showSearchPlay(data)
   })
   .catch(e => {
@@ -178,6 +186,8 @@ function searchTags(query){
   .then(data =>{
     document.getElementById("fav2").classList.remove("d-none") 
     document.getElementById("fav1").classList.add("d-none")
+    document.getElementById("fav3").classList.add("d-none")
+    document.getElementById("fav4").classList.remove("d-none")
     showSearchTags(data)
   })
   .catch(e => {
@@ -188,6 +198,30 @@ function searchTags(query){
     }
   })
   }
+
+  function duplicatePlay(plid){
+    fetch(`/favorites/import/${plid}` ,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ user: user._id }) // send user._id as an object with a user property
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data);
+      window.location.href = "playlist.html";
+    })
+    .catch(e => {
+        alert("Can't import your own playlist!")
+    });
+  }
+  
   function psongs(){
     var pg=parseInt(localStorage.getItem("page"), 10) || 0
     if(pg>1){

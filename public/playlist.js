@@ -51,6 +51,10 @@ if(localStorage.getItem('user')!=null){
                                 pltags.innerHTML = "Tags: " + data[i].tags.join(', ');
                                 plvis.innerHTML = data[i].visibility == 1 ? "Public" : "Private";
                                 
+
+                                var editButton = modal.querySelector('#editpl');
+                                editButton.setAttribute('href', data[i]._id);
+
                                 // Update the "Show Songs" button to target the correct modal
                                 var showSongsButton = clone.querySelector('[data-bs-toggle="modal"]');
                                 showSongsButton.setAttribute('data-bs-target', '#modal-' + i);
@@ -141,26 +145,25 @@ var noplaylist=`
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-
+                        
                         <div class="form-floating mb-3">
-                            <input class="form-control" id="plname" placeholder="Playlist Name">
+                            <input class="form-control" id="plname" placeholder="Playlist Name" >
                             <label for="floatingInput">Playlist Name</label>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <textarea class="form-control" placeholder=Description id="pldesc"></textarea>
-                            <label for="floatingTextarea">Description</label>
+                            <input class="form-control" placeholder=Description id="pldesc" >
+                            <label for="pldesc">Description</label>
                         </div>
 
                         <div class="form-floating mb-3">
-                        <textarea class="form-control" placeholder=Tags id="pltags"></textarea>
-                        <label for="floatingTextarea">Tags</label>
+                        <input class="form-control" placeholder=Tags id="pltags" >
+                        <label for="pltags">Tags</label>
                         </div>
 
                         <div class="form-floating">
                         <select class="form-select" id="plvis" aria-label="Visibility">
-                          <option selected>Open this select menu</option>
-                          <option value="1">Public</option>
+                          <option selected value="1">Public</option>
                           <option value="2">Private</option>
                         </select>
                         <label for="floatingSelect">Visibility</label>
@@ -244,7 +247,7 @@ var okplaylist=`
             <a href="#" class="btn btn-primary p-2 songid" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'} onclick="addSong(this.getAttribute('href')); return false;">Add song</a>
             <a href="#" class="btn btn-secondary p-2 pl-id" onclick="deletePl(this.getAttribute('href')); return false;")">Delete Playlist</a>
               <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show Songs</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show More</button>
 
               <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -268,7 +271,6 @@ var okplaylist=`
                                     <div class="col-sm-6 text-center">
                                         <h3 class="song-title"></h3>
                                         <p class="song-artist"></p>
-
                                     </div>
                                 </div>
                             </div>
@@ -279,9 +281,9 @@ var okplaylist=`
                                 </div>
                             </div>                        
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" onclick="editPlay(this.getAttribute('href')); return false;" id="editpl">Edit Playlist</button>                       
                         </div>
-                    </div>
                 </div>
             </div>
           </div>
@@ -310,10 +312,17 @@ function createPl() {
             },
             body: JSON.stringify(playlist)
         })
-        .then(response => {
-            if (response.ok) {
-                window.location.href = '/playlist.html';
-            }
+        .then(response => response.json())
+        .then(data => {
+            if(data.errorType === 'name'){
+                alert(data.message);
+              }else if(data.errorType === 'description'){
+                alert(data.message);
+              }else if(data.errorType === 'tags'){
+                alert(data.message);
+              }else{
+                window.location.href="playlist.html"
+                } 
         })
         .catch(error => {
             console.log(error);
@@ -407,3 +416,7 @@ async function getUser(id){
         console.log(err);
     })
 }
+
+function editPlay(id) { 
+    window.location.href = 'editplay.html?id=' + id;
+}     

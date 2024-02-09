@@ -181,6 +181,8 @@ async function getUser(id){
 }
 
 async function showSearchPlay(charts){
+    var picker=document.getElementById("picker")
+    picker.classList.add('d-none')
     var card=document.getElementById("playlist-card")
     var container = document.getElementById("playlist-container")
     container.innerHTML = ""
@@ -203,6 +205,7 @@ async function showSearchPlay(charts){
         }
         //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
         clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.getElementsByClassName('fav4')[0].href=charts[i]._id
         clone.querySelector('a').href = "user.html?id_user=" + charts[i].user_id;
         clone.classList.remove('d-none')
         card.before(clone)
@@ -210,6 +213,8 @@ async function showSearchPlay(charts){
 }
 
 async function showSearchTags(charts){
+    var picker=document.getElementById("picker")
+    picker.classList.add('d-none')
     var card=document.getElementById("playlist-card")
     var container = document.getElementById("playlist-container")
     container.innerHTML = ""
@@ -233,6 +238,7 @@ async function showSearchTags(charts){
         //clone.getElementsByClassName('fav1')[0].href=charts[i]._id
         // clone.getElementsByClassName('fav2')[0].href=charts.tracks.items[i].track.id
         clone.getElementsByClassName('fav2')[0].href=charts[i]._id
+        clone.getElementsByClassName('fav4')[0].href=charts[i]._id
         clone.querySelector('a').href = "user.html?id_user=" + charts[i].user_id;
         clone.classList.remove('d-none')
         card.before(clone)
@@ -240,7 +246,7 @@ async function showSearchTags(charts){
 }
 
 async function showUserPlay(data){
-    if(data.length>1){
+    if(data.length>0){
         var code=`
         <div class="container" id="pl-cont">
         <div class="card mt-3" id="pl-card">

@@ -216,17 +216,17 @@
                 const psw=document.getElementById('changeps')
                 psw.innerHTML=`
                 <div class="form-floating mt-3">
-                    <input type="password" id="pass1" class="form-control">
+                    <input type="password" id="pass1" class="form-control" required>
                     <label for="pass1">Insert new password:</label>
                 </div>
                 <div class="form-floating mt-3">
-                    <input type="password" id="pass2" class="form-control">
+                    <input type="password" id="pass2" class="form-control" required>
                     <label for="pass2">Re-insert your password:</label>
                     <span id="valid"></span>
                 </div>
                 `;
             }else{
-                const psw=document.getElementById('changeps')
+                var psw=document.getElementById('changeps')
                 psw.innerHTML=``;
             }
         })
@@ -240,7 +240,12 @@
                 ps2.classList.add("is-invalid")
                 var labpsw=document.querySelector('label[for="pass2"]')
                 labpsw.textContent="Password does not match"
-            }else{
+            }else if(ps1.value.length<8){
+                ps1.classList.add("is-invalid")
+                var labpsw=document.querySelector('label[for="pass1"]')
+                labpsw.textContent="Password must be at least 8 characters long"
+            }
+            else{
                 var name=document.getElementById('name')
                 var surname=document.getElementById('surname')
                 var username=document.getElementById('us')
