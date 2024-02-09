@@ -244,11 +244,18 @@ var okplaylist=`
             <h5 class="card-title"> <span id="plname" class="plname"></span> <span id="htag" class="htag d-none" style="font-size: smaller; opacity: 0.5;"> by @<span id="username" class="username"></span></span></h5>
             <p class="card-text imported" style="opacity: 50%;"></p>
             <p class="card-text pldesc" id="pldesc"></p>
-            <a href="#" class="btn btn-primary p-2 songid" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'} onclick="addSong(this.getAttribute('href')); return false;">Add song</a>
-            <a href="#" class="btn btn-secondary p-2 pl-id" onclick="deletePl(this.getAttribute('href')); return false;")">Delete Playlist</a>
-              <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show More</button>
-
+            <div class="row">
+            <div class="col-12 mb-2" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'}>
+                <a href="#" class="btn btn-primary p-2 songid" ${localStorage.getItem('song_id') ? '' : 'style="display: none;"'} onclick="addSong(this.getAttribute('href')); return false;" style="width: 200px">Add song</a>
+            </div>
+            <div class="col-12 mb-2">
+                <a href="#" class="btn btn-secondary p-2 pl-id" onclick="deletePl(this.getAttribute('href')); return false;" style="width: 200px">Delete Playlist</a>
+            </div>
+            <div class="col-12">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="width: 200px">Show More</button>
+            </div>
+            </div>
               <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog">
