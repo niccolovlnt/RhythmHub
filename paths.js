@@ -530,7 +530,7 @@ app.get('/favorites/showplay', async (req,res) => {
 
 //show playlist by name on search page
 app.get('/favorites/searchplay', async (req,res) => {
-    var query=req.query.query
+    var query =new RegExp(req.query.query, 'i'); //case-insensitive regex
     try{
     var pwmClient = await new mongoClient(mongo).connect()
     var favorites = await pwmClient.db("RhythmHub")

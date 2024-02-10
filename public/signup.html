@@ -180,7 +180,6 @@
                   </div>
               </div>
 
-            <!-- <div id="error-message" style="color: white; background-color: red; border: 2px solid red; border-radius: 10px; text-align: center;" class="mb-2 mt-2 d-none"></div>           Submit button -->
             <div class="col text-center g-2 ">
               <button type="submit" class="btn btn-primary mb-4 mt-3">
                 Sign Up
@@ -294,8 +293,9 @@ fetch('/api/genres')
     var errorMessage = document.getElementById('error-message');
 
     if(pass.value !== pass2.value){
-        errorMessage.classList.remove('d-none');
-        errorMessage.textContent = "Passwords do not match";
+        pass.value = '';
+        pass2.value = '';
+        alert("Passwords do not match")
         return;
     }  
     
